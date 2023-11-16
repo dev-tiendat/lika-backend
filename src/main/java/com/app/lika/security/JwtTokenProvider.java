@@ -28,7 +28,7 @@ public class JwtTokenProvider {
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
 
         Date now = new Date();
-        Date expiryDate = new Date(now.getTime() + jwtExpirationInMs);
+        Date expiryDate = new Date(2099, 01, 01);
 
         return Jwts.builder()
                 .setSubject(Long.toString(userPrincipal.getId()))
@@ -52,7 +52,7 @@ public class JwtTokenProvider {
         return Long.valueOf(claims.getSubject());
     }
 
-    public boolean validateToken(String authToken, HttpServletRequest request) throws ExpiredJwtException{
+    public boolean validateToken(String authToken, HttpServletRequest request) throws ExpiredJwtException {
         try {
             Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parse(authToken);
             return true;

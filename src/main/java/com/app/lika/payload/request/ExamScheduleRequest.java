@@ -24,5 +24,7 @@ public class ExamScheduleRequest {
 
     private Long examSetId;
 
+    private String teacherUsername;
+
     private List<String> studentsUsernames;
 }

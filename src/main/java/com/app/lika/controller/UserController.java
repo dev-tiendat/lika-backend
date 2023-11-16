@@ -42,6 +42,7 @@ public class UserController {
         PaginationUtils.validatePageNumberAndSize(page, size);
 
         FilterBy filters = new FilterBy();
+        System.out.println(role);
         filters.addFilter("role", role == null ? null : role.toString());
         filters.addFilter("status", status == null ? null : status.toString());
 

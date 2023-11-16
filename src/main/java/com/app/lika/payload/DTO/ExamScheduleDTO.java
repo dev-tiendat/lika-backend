@@ -25,5 +25,7 @@ public class ExamScheduleDTO {
 
     private ExamSet examSet;
 
+    private UserSummary teacher;
+
     private List<UserSummary> students;
 }

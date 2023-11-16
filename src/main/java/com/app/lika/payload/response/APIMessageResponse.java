@@ -20,13 +20,13 @@ public class APIMessageResponse {
     private static final long serialVersionUID = 7702134516418120340L;
 
     @JsonProperty("code")
-    private Integer code;
-
-    @JsonProperty("error")
-    private String error;
+    private Integer errorCode;
 
     @JsonProperty("success")
     private Boolean success;
+
+    @JsonProperty("error")
+    private String error;
 
     @JsonProperty("message")
     private String message;
@@ -43,15 +43,15 @@ public class APIMessageResponse {
         this.message = message;
     }
 
-    public APIMessageResponse(int code, String error, Boolean success, String message) {
-        this.code = code;
+    public APIMessageResponse(int errorCode, String error, Boolean success, String message) {
+        this.errorCode = errorCode;
         this.error = error;
         this.success = success;
         this.message = message;
     }
 
-    public APIMessageResponse(int code, Boolean success, String message, HttpStatus status) {
-        this.code = code;
+    public APIMessageResponse(int errorCode, Boolean success, String message, HttpStatus status) {
+        this.errorCode = errorCode;
         this.success = success;
         this.message = message;
         this.status = status;

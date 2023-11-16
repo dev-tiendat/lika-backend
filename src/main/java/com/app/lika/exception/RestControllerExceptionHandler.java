@@ -29,7 +29,7 @@ public class RestControllerExceptionHandler {
 
         APIMessageResponse apiMessageResponse = new APIMessageResponse();
         apiMessageResponse.setSuccess(Boolean.FALSE);
-        apiMessageResponse.setCode(code);
+        apiMessageResponse.setErrorCode(code);
         apiMessageResponse.setMessage(message);
 
         return new ResponseEntity<>(apiMessageResponse, status);

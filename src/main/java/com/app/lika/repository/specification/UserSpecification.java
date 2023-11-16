@@ -22,7 +22,7 @@ public class UserSpecification extends SearchCriteria<User> {
         String status = filter.get("status");
 
         if (StringUtils.isNotEmpty(role)) {
-            Join<Role, User> userRoleJoin = root.join("roles", JoinType.LEFT);
+            Join<Role, User> userRoleJoin = root.join("roles", JoinType.RIGHT);
             Predicate equalRole = buildPredicate(SearchOperation.EQUAL, userRoleJoin.get("id"), role);
             predicates.add(equalRole);
         }

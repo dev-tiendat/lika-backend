@@ -79,7 +79,8 @@ public class UserServiceImpl implements UserService {
         }
 
         Page<User> users;
-        if (!paginationCriteria.isFilterByEmpty() && StringUtils.isNotEmpty(paginationCriteria.getQuery())) {
+        if (!paginationCriteria.isFilterByEmpty() || StringUtils.isNotEmpty(paginationCriteria.getQuery())) {
+            System.out.println("đã vào");
             UserSpecification userSpecification = new UserSpecification(paginationCriteria.getFilters().getMapOfFilters(), paginationCriteria.getQuery());
             users = userRepository.findAll(userSpecification, pageRequest);
         }

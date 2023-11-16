@@ -55,12 +55,15 @@ public class ExamSchedule {
     @JoinColumn(name = "exam_set_id")
     private ExamSet examSet;
 
-    @ManyToMany(fetch = FetchType.EAGER,cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "teacher_id")
+    private User teacher;
+
+    @ManyToMany(fetch = FetchType.EAGER,cascade = {CascadeType.MERGE,CascadeType.PERSIST})
     @JoinTable(name = "student_exam_schedule", joinColumns = @JoinColumn(name = "exam_schedule_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "student_id", referencedColumnName = "id"))
-    @JsonBackReference
     private List<User> students;
 
-    public ExamSchedule(String title, String summary, Date publishedAt, Date closedAt, Integer timeAllowance, Status status, ExamSet examSet, List<User> students) {
+    public ExamSchedule(String title, String summary, Date publishedAt, Date closedAt, Integer timeAllowance, Status status, ExamSet examSet,User teacher, List<User> students) {
         this.title = title;
         this.summary = summary;
         this.publishedAt = publishedAt;
@@ -68,6 +71,7 @@ public class ExamSchedule {
         this.timeAllowance = timeAllowance;
         this.status = status;
         this.examSet = examSet;
+        this.teacher = teacher;
         this.students = students;
     }
 }

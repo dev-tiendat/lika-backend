@@ -10,6 +10,7 @@ import com.app.lika.service.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,17 +24,17 @@ public class AuthController {
         this.authService = authService;
     }
 
-    @PostMapping("/signIn")
-    public ResponseEntity<APIResponse<AuthenticationResponse>> signIn(@Valid @RequestBody SignInRequest signInRequest){
+    @PostMapping(value = "/signIn")
+    public ResponseEntity<APIResponse<AuthenticationResponse>> signIn(@Valid @RequestBody SignInRequest signInRequest) {
         var data = authService.signIn(signInRequest);
 
-        return new ResponseEntity<>(new APIResponse<>("Đăng nhập thành công",data),HttpStatus.OK);
+        return new ResponseEntity<>(new APIResponse<>("Đăng nhập thành công", data), HttpStatus.OK);
     }
 
     @PostMapping("/signUp")
     public ResponseEntity<APIMessageResponse> signUp(@Valid @RequestBody SignUpRequest signUpRequest) {
         var data = authService.signUp(signUpRequest);
 
-        return new ResponseEntity<>(new APIMessageResponse(Boolean.TRUE,"Đăng ký tài khoản thành công"),HttpStatus.CREATED);
+        return new ResponseEntity<>(new APIMessageResponse(Boolean.TRUE, "Đăng ký tài khoản thành công"), HttpStatus.CREATED);
     }
 }
