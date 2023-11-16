@@ -7,7 +7,6 @@ import com.app.lika.payload.pagination.PaginationCriteria;
 import com.app.lika.payload.request.UserRequest;
 import com.app.lika.security.UserPrincipal;
 import org.springframework.stereotype.Service;
-import com.app.lika.model.user.User;
 
 @Service
 public interface UserService {
@@ -17,13 +16,13 @@ public interface UserService {
 
     UserProfile getUserProfile(String username);
 
-    User addUser(UserRequest userRequest);
+    UserProfile addUser(UserRequest userRequest);
 
-    void deleteUser(String username);
+    UserProfile deleteUser(String username);
 
-    void giveAdmin(String username);
+    UserProfile giveAdmin(String username);
 
-    User updateUser(User newUser,String username, UserPrincipal userPrincipal);
+    UserProfile updateUser(UserRequest newUser,String username, UserPrincipal userPrincipal);
 
-    void activateOrDeactivateUser(String username, Status status);
+    UserProfile activateOrDeactivateUser(String username, Status status);
 }

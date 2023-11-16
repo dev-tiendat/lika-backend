@@ -3,10 +3,10 @@ package com.app.lika.controller;
 
 import com.app.lika.model.Chapter;
 import com.app.lika.model.Subject;
+import com.app.lika.payload.DTO.ChapterDTO;
 import com.app.lika.payload.DTO.SubjectDTO;
 import com.app.lika.payload.pagination.*;
 import com.app.lika.payload.request.CreateSubjectRequest;
-import com.app.lika.payload.response.APIMessageResponse;
 import com.app.lika.payload.response.APIResponse;
 import com.app.lika.payload.response.IdentityAvailability;
 import com.app.lika.payload.response.SubjectNameResponse;
@@ -91,27 +91,27 @@ public class SubjectController {
 
     @GetMapping("{id}/chapters")
     @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
-    public ResponseEntity<APIResponse<Chapter>> getChaptersBySubject(@PathVariable(name = "id") String id) {
-        List<Chapter> data = chapterService.getAllChapterBySubjectId(id);
-        APIResponse<Chapter> response = new APIResponse("Get all chapters by " + id + " successful !", data);
+    public ResponseEntity<APIResponse<List<ChapterDTO>>> getChaptersBySubject(@PathVariable(name = "id") String id) {
+        List<ChapterDTO> data = chapterService.getAllChapterBySubjectId(id);
+        APIResponse<List<ChapterDTO>> response = new APIResponse<>("Get all chapters by " + id + " successful !", data);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<APIResponse<Subject>> addSubject(@RequestBody @Valid CreateSubjectRequest subject) {
-        Subject data = subjectService.addSubject(subject);
-        APIResponse<Subject> response = new APIResponse<>("Add subject successful!", data);
+    public ResponseEntity<APIResponse<SubjectDTO>> addSubject(@RequestBody @Valid CreateSubjectRequest subject) {
+        SubjectDTO data = subjectService.addSubject(subject);
+        APIResponse<SubjectDTO> response = new APIResponse<>("Add subject successful!", data);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @DeleteMapping("{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<APIMessageResponse> deleteSubject(@PathVariable String id) {
-        subjectService.deleteSubject(id);
-        APIMessageResponse response = new APIMessageResponse(Boolean.TRUE, "Delete subject successful !");
+    public ResponseEntity<APIResponse<SubjectDTO>> deleteSubject(@PathVariable String id) {
+        SubjectDTO data = subjectService.deleteSubject(id);
+        APIResponse<SubjectDTO> response = new APIResponse<>("Delete subject successful !", data);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

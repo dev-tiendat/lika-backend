@@ -1,20 +1,28 @@
 package com.app.lika.exception;
 
-import com.app.lika.payload.response.APIMessageResponse;
+import com.app.lika.payload.response.APIResponse;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import java.io.Serial;
+
+@EqualsAndHashCode(callSuper = true)
+@Data
 @ResponseStatus(code = HttpStatus.UNAUTHORIZED)
 public class AccessDeniedException extends RuntimeException {
+    @Serial
     private static final long serialVersionUID = 1L;
 
-    private APIMessageResponse apiMessageResponse;
+    private APIResponse apiResponse;
 
     private String message;
 
-    public AccessDeniedException(APIMessageResponse apiMessageResponse) {
+    public AccessDeniedException(APIResponse apiResponse) {
         super();
-        this.apiMessageResponse = apiMessageResponse;
+        apiResponse.setErrorCode(HttpStatus.FORBIDDEN.value());
+        this.apiResponse = apiResponse;
     }
 
     public AccessDeniedException(String message) {
@@ -25,21 +33,4 @@ public class AccessDeniedException extends RuntimeException {
     public AccessDeniedException(String message, Throwable cause) {
         super(message, cause);
     }
-
-    public APIMessageResponse getApiMessageResponse() {
-        return apiMessageResponse;
-    }
-
-    public void setApiMessageResponse(APIMessageResponse apiMessageResponse) {
-        this.apiMessageResponse = apiMessageResponse;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
 }

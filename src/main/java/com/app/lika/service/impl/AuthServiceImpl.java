@@ -3,10 +3,12 @@ package com.app.lika.service.impl;
 import com.app.lika.exception.APIException;
 import com.app.lika.exception.AppException;
 import com.app.lika.exception.ExceptionCustomCode;
+import com.app.lika.mapper.UserMapper;
 import com.app.lika.model.role.Role;
 import com.app.lika.model.role.RoleName;
 import com.app.lika.model.user.Status;
 import com.app.lika.model.user.User;
+import com.app.lika.payload.DTO.UserProfile;
 import com.app.lika.payload.request.SignInRequest;
 import com.app.lika.payload.request.SignUpRequest;
 import com.app.lika.payload.response.AuthenticationResponse;
@@ -43,13 +45,16 @@ public class AuthServiceImpl implements AuthService {
 
     private final JwtTokenProvider tokenProvider;
 
+    private final UserMapper userMapper;
+
     @Autowired
-    public AuthServiceImpl(AuthenticationManager authenticationManager, UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder, JwtTokenProvider tokenProvider) {
+    public AuthServiceImpl(AuthenticationManager authenticationManager, UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder, JwtTokenProvider tokenProvider, UserMapper userMapper) {
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
         this.tokenProvider = tokenProvider;
+        this.userMapper = userMapper;
     }
 
     @Override
@@ -61,20 +66,20 @@ public class AuthServiceImpl implements AuthService {
 
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
         List<String> roles = userPrincipal.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority).collect(Collectors.toList());
+                .map(GrantedAuthority::getAuthority).toList();
         String jwt = tokenProvider.generateToken(authentication);
 
         return new AuthenticationResponse(userPrincipal.getId(), userPrincipal.getUsername(), userPrincipal.getEmail(), roles, jwt);
     }
 
     @Override
-    public User signUp(SignUpRequest signUpRequest) {
+    public UserProfile signUp(SignUpRequest signUpRequest) {
         if (Boolean.TRUE.equals(userRepository.existsByUsername(signUpRequest.getUsername()))) {
-            throw new APIException(HttpStatus.BAD_REQUEST, ExceptionCustomCode.USERNAME_ALREADY_EXISTS.getCode(), "Username already exists");
+            throw new APIException(HttpStatus.BAD_REQUEST, "Username already exists", ExceptionCustomCode.USERNAME_ALREADY_EXISTS.getCode());
         }
 
         if (Boolean.TRUE.equals(userRepository.existsByEmail(signUpRequest.getEmail()))) {
-            throw new APIException(HttpStatus.BAD_REQUEST, ExceptionCustomCode.EMAIL_ALREADY_EXISTS.getCode(), "Email already exists");
+            throw new APIException(HttpStatus.BAD_REQUEST, "Email already exists", ExceptionCustomCode.EMAIL_ALREADY_EXISTS.getCode());
         }
 
         RoleName roleRequest = signUpRequest.getRole();
@@ -95,8 +100,6 @@ public class AuthServiceImpl implements AuthService {
                 .orElseThrow(() -> new AppException(USER_ROLE_NOT_SET)));
         user.setRoles(roles);
 
-        User result = userRepository.save(user);
-
-        return result;
+        return userMapper.entityToUserProfile(userRepository.save(user));
     }
 }

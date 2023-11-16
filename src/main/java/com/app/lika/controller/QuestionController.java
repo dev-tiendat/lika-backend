@@ -4,7 +4,6 @@ import com.app.lika.model.Status;
 import com.app.lika.payload.DTO.QuestionDTO;
 import com.app.lika.payload.pagination.*;
 import com.app.lika.payload.request.QuestionRequest;
-import com.app.lika.payload.response.APIMessageResponse;
 import com.app.lika.payload.response.APIResponse;
 import com.app.lika.security.CurrentUser;
 import com.app.lika.security.UserPrincipal;
@@ -82,36 +81,36 @@ public class QuestionController {
 
     @DeleteMapping("{id}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
-    public ResponseEntity<APIMessageResponse> deleteQuestion(
+    public ResponseEntity<APIResponse<QuestionDTO>> deleteQuestion(
             @PathVariable(name = "id") Long id,
             @CurrentUser UserPrincipal currentUser
     ) {
-        questionService.deleteQuestion(id, currentUser);
-        APIMessageResponse response = new APIMessageResponse(Boolean.TRUE, "Delete question successful !");
+        QuestionDTO data = questionService.deleteQuestion(id, currentUser);
+        APIResponse<QuestionDTO> response = new APIResponse<>("Delete question successful !", data);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PatchMapping("/{id}/enable")
     @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
-    public ResponseEntity<APIMessageResponse> enableQuestion(
+    public ResponseEntity<APIResponse<QuestionDTO>> enableQuestion(
             @PathVariable(name = "id") Long id,
             @CurrentUser UserPrincipal currentUser
     ) {
-        questionService.enableOrDisableQuestion(id, currentUser, Status.ENABLE);
-        APIMessageResponse response = new APIMessageResponse(Boolean.TRUE, "Enable question successful !");
+        QuestionDTO data = questionService.enableOrDisableQuestion(id, currentUser, Status.ENABLE);
+        APIResponse<QuestionDTO> response = new APIResponse<>("Enable question successful !", data);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PatchMapping("/{id}/disable")
     @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
-    public ResponseEntity<APIMessageResponse> disableQuestion(
+    public ResponseEntity<APIResponse<QuestionDTO>> disableQuestion(
             @PathVariable(name = "id") Long id,
             @CurrentUser UserPrincipal currentUser
     ) {
-        questionService.enableOrDisableQuestion(id, currentUser, Status.DISABLE);
-        APIMessageResponse response = new APIMessageResponse(Boolean.TRUE, "Disable question successful !");
+        QuestionDTO data = questionService.enableOrDisableQuestion(id, currentUser, Status.DISABLE);
+        APIResponse<QuestionDTO> response = new APIResponse<>("Disable question successful !", data);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

@@ -15,6 +15,6 @@ public interface ExamScheduleService {
     PagedResponse<ExamScheduleDTO> getAllExamSchedule(PaginationCriteria paginationCriteria);
     ExamScheduleDTO addExamSchedule(ExamScheduleRequest examScheduleRequest);
     ExamScheduleDTO updateExamSchedule(ExamScheduleRequest examScheduleRequest, long id);
-    void deleteExamSchedule(Long id);
-    void enableAndCancelExamSchedule(long id, Status status);
+    ExamScheduleDTO deleteExamSchedule(Long id);
+    ExamScheduleDTO enableAndCancelExamSchedule(long id, Status status);
 }

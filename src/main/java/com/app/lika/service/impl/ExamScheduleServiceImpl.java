@@ -167,26 +167,27 @@ public class ExamScheduleServiceImpl implements ExamScheduleService {
     }
 
     @Override
-    public void deleteExamSchedule(Long id) {
+    public ExamScheduleDTO deleteExamSchedule(Long id) {
         ExamSchedule examSchedule = examScheduleRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(AppConstants.EXAM_SCHEDULE, AppConstants.ID, id));
 
         if (examSchedule.getPublishedAt().after(new Date())) {
             examScheduleRepository.delete(examSchedule);
-            return;
+
+            return examScheduleMapper.entityToExamScheduleDto(examSchedule);
         }
 
         throw new BadRequestException("The current exam schedule has expired and cannot be deleted !");
     }
 
     @Override
-    public void enableAndCancelExamSchedule(long id, Status status) {
+    public ExamScheduleDTO enableAndCancelExamSchedule(long id, Status status) {
         ExamSchedule examSchedule = examScheduleRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(AppConstants.EXAM_SCHEDULE, AppConstants.ID, id));
         if (examSchedule.getPublishedAt().after(new Date())) {
             examSchedule.setStatus(status);
-            examScheduleRepository.save(examSchedule);
-            return;
+
+            return examScheduleMapper.entityToExamScheduleDto(examScheduleRepository.save(examSchedule));
         }
 
         throw new BadRequestException("The current exam schedule has expired and cannot be updated !");

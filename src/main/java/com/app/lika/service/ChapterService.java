@@ -1,9 +1,9 @@
 package com.app.lika.service;
 
-import com.app.lika.model.Chapter;
+import com.app.lika.payload.DTO.ChapterDTO;
 
 import java.util.List;
 
 public interface ChapterService {
-    List<Chapter> getAllChapterBySubjectId(String id);
+    List<ChapterDTO> getAllChapterBySubjectId(String id);
 }

@@ -8,4 +8,6 @@ import org.mapstruct.MappingConstants;
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface ChapterMapper {
     Chapter chapterDtoToEntity(ChapterDTO chapterDTO);
+
+    ChapterDTO entityToChapterDto(Chapter chapter);
 }

@@ -1,6 +1,6 @@
 package com.app.lika.exception;
 
-import com.app.lika.payload.response.APIMessageResponse;
+import com.app.lika.payload.response.APIResponse;
 import com.app.lika.payload.response.ExceptionResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,56 +22,52 @@ import java.util.Objects;
 public class RestControllerExceptionHandler {
 
     @ExceptionHandler(APIException.class)
-    public ResponseEntity<APIMessageResponse> resolveException(APIException exception) {
+    public ResponseEntity<APIResponse> resolveException(APIException exception) {
         String message = exception.getMessage();
         HttpStatus status = exception.getStatus();
         Integer code = exception.getCode();
 
-        APIMessageResponse apiMessageResponse = new APIMessageResponse();
-        apiMessageResponse.setSuccess(Boolean.FALSE);
-        apiMessageResponse.setErrorCode(code);
-        apiMessageResponse.setMessage(message);
+        APIResponse apiResponse = new APIResponse(code, message);
 
-        return new ResponseEntity<>(apiMessageResponse, status);
+        return new ResponseEntity<>(apiResponse, status);
     }
 
     @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity<APIMessageResponse> resolveException(BadRequestException exception) {
-        APIMessageResponse apiMessageResponse = exception.getApiMessageResponse();
+    public ResponseEntity<APIResponse> resolveException(BadRequestException exception) {
+        APIResponse apiResponse = exception.getApiResponse();
 
-        return new ResponseEntity<>(apiMessageResponse, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(UnauthorizedException.class)
     @ResponseBody
     @ResponseStatus(code = HttpStatus.UNAUTHORIZED)
-    public ResponseEntity<APIMessageResponse> resolveException(UnauthorizedException exception) {
-
-        APIMessageResponse apiResponse = exception.getApiResponse();
+    public ResponseEntity<APIResponse> resolveException(UnauthorizedException exception) {
+        APIResponse apiResponse = exception.getApiResponse();
 
         return new ResponseEntity<>(apiResponse, HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
     @ResponseBody
-    public ResponseEntity<APIMessageResponse> resolveException(ResourceNotFoundException exception) {
-        APIMessageResponse apiResponse = exception.getApiResponse();
+    public ResponseEntity<APIResponse> resolveException(ResourceNotFoundException exception) {
+        APIResponse apiResponse = exception.getApiResponse();
 
         return new ResponseEntity<>(apiResponse, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(IntegrityConstraintViolationException.class)
     @ResponseBody
-    public ResponseEntity<APIMessageResponse> resolveException(IntegrityConstraintViolationException exception){
-        APIMessageResponse apiResponse = exception.getApiResponse();
+    public ResponseEntity<APIResponse> resolveException(IntegrityConstraintViolationException exception) {
+        APIResponse apiResponse = exception.getApiResponse();
 
         return new ResponseEntity<>(apiResponse, HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(AccessDeniedException.class)
     @ResponseBody
-    public ResponseEntity<APIMessageResponse> resolveException(AccessDeniedException exception) {
-        APIMessageResponse apiResponse = exception.getApiMessageResponse();
+    public ResponseEntity<APIResponse> resolveException(AccessDeniedException exception) {
+        APIResponse apiResponse = exception.getApiResponse();
 
         return new ResponseEntity<>(apiResponse, HttpStatus.FORBIDDEN);
     }
@@ -79,10 +75,10 @@ public class RestControllerExceptionHandler {
     @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
     @ResponseBody
     @ResponseStatus(HttpStatus.FORBIDDEN)
-    public ResponseEntity<APIMessageResponse> resolveException(org.springframework.security.access.AccessDeniedException exception) {
-        APIMessageResponse apiResponse = new APIMessageResponse();
+    public ResponseEntity<APIResponse> resolveException(org.springframework.security.access.AccessDeniedException exception) {
+        APIResponse apiResponse = new APIResponse();
         apiResponse.setMessage(exception.getMessage());
-        apiResponse.setError(HttpStatus.FORBIDDEN.getReasonPhrase());
+        apiResponse.setErrorCode(HttpStatus.FORBIDDEN.value());
 
         return new ResponseEntity<>(apiResponse, HttpStatus.FORBIDDEN);
     }

@@ -4,7 +4,6 @@ import com.app.lika.model.user.Status;
 import com.app.lika.payload.DTO.UserProfile;
 import com.app.lika.payload.pagination.*;
 import com.app.lika.payload.request.UserRequest;
-import com.app.lika.payload.response.APIMessageResponse;
 import com.app.lika.payload.response.APIResponse;
 import com.app.lika.security.CurrentUser;
 import com.app.lika.security.UserPrincipal;
@@ -12,7 +11,6 @@ import com.app.lika.service.UserService;
 import com.app.lika.utils.AppConstants;
 import com.app.lika.utils.PaginationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,11 +18,13 @@ import org.springframework.web.bind.annotation.*;
 import com.app.lika.model.user.User;
 
 import javax.validation.Valid;
-import java.util.Objects;
 
 @RestController
 @RequestMapping("/v1/api/users")
 public class UserController {
+    private static final String[] SORT_COLUMNS = new String[]{"id", "firstName", "lastName", "username"};
+
+
     @Autowired
     private UserService userService;
 
@@ -40,9 +40,9 @@ public class UserController {
             @RequestParam(name = "status", required = false) Integer status
     ) {
         PaginationUtils.validatePageNumberAndSize(page, size);
+        PaginationUtils.sortColumnCheck(SORT_COLUMNS, sortField);
 
         FilterBy filters = new FilterBy();
-        System.out.println(role);
         filters.addFilter("role", role == null ? null : role.toString());
         filters.addFilter("status", status == null ? null : status.toString());
 
@@ -79,57 +79,57 @@ public class UserController {
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<APIResponse<User>> addUser(@RequestBody UserRequest userRequest) {
-        var data = userService.addUser(userRequest);
-        APIResponse<User> response = new APIResponse<>("Add user successful !", data);
+    public ResponseEntity<APIResponse<UserProfile>> addUser(@RequestBody @Valid UserRequest userRequest) {
+        UserProfile data = userService.addUser(userRequest);
+        APIResponse<UserProfile> response = new APIResponse<>("Add user successful !", data);
 
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{username}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<APIMessageResponse> deleteUser(@PathVariable(name = "username") String username) {
-        userService.deleteUser(username);
-        APIMessageResponse response = new APIMessageResponse(Boolean.TRUE, "Delete user successful !");
+    public ResponseEntity<APIResponse<UserProfile>> deleteUser(@PathVariable(name = "username") String username) {
+        UserProfile data = userService.deleteUser(username);
+        APIResponse response = new APIResponse("Delete user successful !", data);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PutMapping("{username}")
-    public ResponseEntity<APIResponse<User>> updateUser(
-            @Valid @RequestBody User newUser,
+    public ResponseEntity<APIResponse<UserProfile>> updateUser(
+            @Valid @RequestBody UserRequest newUser,
             @PathVariable(name = "username") String username,
             @CurrentUser UserPrincipal currentUser
     ) {
-        User data = userService.updateUser(newUser, username, currentUser);
-        APIResponse<User> response = new APIResponse<>("Updated profile of" + username + "successful !", data);
+        UserProfile data = userService.updateUser(newUser, username, currentUser);
+        APIResponse<UserProfile> response = new APIResponse<>("Updated profile of" + username + "successful !", data);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PatchMapping("{username}/giveAdmin")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<APIMessageResponse> giveAdmin(@PathVariable(name = "username") String username) {
-        userService.giveAdmin(username);
-        APIMessageResponse response = new APIMessageResponse(Boolean.TRUE, "You gave ADMIN role to user: " + username);
+    public ResponseEntity<APIResponse<UserProfile>> giveAdmin(@PathVariable(name = "username") String username) {
+        UserProfile data = userService.giveAdmin(username);
+        APIResponse<UserProfile> response = new APIResponse<>("You gave ADMIN role to user: " + username, data);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PatchMapping("{username}/activate")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<APIMessageResponse> activateAccount(@PathVariable(name = "username") String username) {
-        userService.activateOrDeactivateUser(username, Status.ACTIVE);
-        APIMessageResponse response = new APIMessageResponse(Boolean.TRUE, "You activate user of " + username + " successful!");
+    public ResponseEntity<APIResponse<UserProfile>> activateAccount(@PathVariable(name = "username") String username) {
+        UserProfile data = userService.activateOrDeactivateUser(username, Status.ACTIVE);
+        APIResponse<UserProfile> response = new APIResponse<>("You activate user of " + username + " successful!", data);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PatchMapping("{username}/deactivate")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<APIMessageResponse> deactivateAccount(@PathVariable(name = "username") String username) {
-        userService.activateOrDeactivateUser(username, Status.INACTIVE);
-        APIMessageResponse response = new APIMessageResponse(Boolean.TRUE, "You deactivate user of " + username + " successful!");
+    public ResponseEntity<APIResponse<UserProfile>> deactivateAccount(@PathVariable(name = "username") String username) {
+        UserProfile data = userService.activateOrDeactivateUser(username, Status.INACTIVE);
+        APIResponse<UserProfile> response = new APIResponse<>("You deactivate user of " + username + " successful!", data);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

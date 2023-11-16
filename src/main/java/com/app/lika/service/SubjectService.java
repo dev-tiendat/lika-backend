@@ -16,10 +16,10 @@ public interface SubjectService {
 
     Boolean checkSubjectIdAvailability(String id);
 
-    Subject addSubject(CreateSubjectRequest subjectRequest);
+    SubjectDTO addSubject(CreateSubjectRequest subjectRequest);
 
     SubjectDTO updateSubject(SubjectDTO subjectRequest, String id);
 
-    void deleteSubject(String id);
+    SubjectDTO deleteSubject(String id);
 
 }

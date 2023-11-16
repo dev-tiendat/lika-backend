@@ -16,7 +16,7 @@ public interface QuestionService {
 
     QuestionDTO updateQuestion(QuestionRequest questionRequest, UserPrincipal currentUser, Long id);
 
-    void deleteQuestion(Long id, UserPrincipal currentUser);
+    QuestionDTO deleteQuestion(Long id, UserPrincipal currentUser);
 
-    void enableOrDisableQuestion(Long id, UserPrincipal currentPrincipal, Status status);
+    QuestionDTO enableOrDisableQuestion(Long id, UserPrincipal currentPrincipal, Status status);
 }

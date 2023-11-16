@@ -1,7 +1,7 @@
 package com.app.lika.security;
 
 import com.app.lika.exception.ExceptionCustomCode;
-import com.app.lika.payload.response.APIMessageResponse;
+import com.app.lika.payload.response.APIResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import jakarta.servlet.ServletException;
@@ -30,9 +30,8 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
-        APIMessageResponse body = new APIMessageResponse();
-        body.setSuccess(Boolean.FALSE);
-        body.setError("Unauthorized");
+        APIResponse body = new APIResponse();
+
         if (authException.getClass().isAssignableFrom(LockedException.class)) {
             body.setErrorCode(ExceptionCustomCode.ACCOUNT_LOCKED.getCode());
             body.setMessage("This account has not been activated");

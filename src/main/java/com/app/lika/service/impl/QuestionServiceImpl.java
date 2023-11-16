@@ -176,7 +176,7 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public void deleteQuestion(Long id, UserPrincipal currentUser) {
+    public QuestionDTO deleteQuestion(Long id, UserPrincipal currentUser) {
         Question question = questionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(AppConstants.QUESTION, AppConstants.ID, id));
 
@@ -184,7 +184,8 @@ public class QuestionServiceImpl implements QuestionService {
                 || currentUser.getAuthorities().contains(new SimpleGrantedAuthority(RoleName.ROLE_ADMIN.toString()))) {
             try {
                 questionRepository.delete(question);
-                return;
+
+                return questionMapper.entityToQuestionDto(question);
             } catch (Exception ex) {
                 throw new IntegrityConstraintViolationException(AppConstants.QUESTION);
             }
@@ -194,16 +195,15 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public void enableOrDisableQuestion(Long id, UserPrincipal currentUser, Status status) {
+    public QuestionDTO enableOrDisableQuestion(Long id, UserPrincipal currentUser, Status status) {
         Question question = questionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(AppConstants.QUESTION, AppConstants.ID, id));
 
         if (question.getTeacher().getId().equals(currentUser.getId())
                 || currentUser.getAuthorities().contains(new SimpleGrantedAuthority(RoleName.ROLE_ADMIN.toString()))) {
             question.setStatus(status);
-            questionRepository.save(question);
 
-            return;
+            return questionMapper.entityToQuestionDto(questionRepository.save(question));
         }
 
         throw new UnauthorizedException("You don't have permission to question of : " + id);

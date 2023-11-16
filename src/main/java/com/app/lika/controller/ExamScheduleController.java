@@ -4,7 +4,6 @@ import com.app.lika.model.Status;
 import com.app.lika.payload.DTO.ExamScheduleDTO;
 import com.app.lika.payload.pagination.*;
 import com.app.lika.payload.request.ExamScheduleRequest;
-import com.app.lika.payload.response.APIMessageResponse;
 import com.app.lika.payload.response.APIResponse;
 import com.app.lika.service.ExamScheduleService;
 import com.app.lika.utils.AppConstants;
@@ -78,27 +77,27 @@ public class ExamScheduleController {
 
     @DeleteMapping("{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<APIMessageResponse> deleteExamSchedule(@PathVariable(name = "id") Long id) {
-        examScheduleService.deleteExamSchedule(id);
-        APIMessageResponse response = new APIMessageResponse(Boolean.TRUE, "Delete exam schedule successful !");
+    public ResponseEntity<APIResponse<ExamScheduleDTO>> deleteExamSchedule(@PathVariable(name = "id") Long id) {
+        ExamScheduleDTO data = examScheduleService.deleteExamSchedule(id);
+        APIResponse<ExamScheduleDTO> response = new APIResponse("Delete exam schedule successful ", data);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PatchMapping("{id}/enable")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<APIMessageResponse> enableExamSchedule(@PathVariable(name = "id") Long id) {
-        examScheduleService.enableAndCancelExamSchedule(id, Status.ENABLE);
-        APIMessageResponse response = new APIMessageResponse(Boolean.TRUE, "Enable exam schedule successful !");
+    public ResponseEntity<APIResponse<ExamScheduleDTO>> enableExamSchedule(@PathVariable(name = "id") Long id) {
+        ExamScheduleDTO data = examScheduleService.enableAndCancelExamSchedule(id, Status.ENABLE);
+        APIResponse<ExamScheduleDTO> response = new APIResponse<>("Enable exam schedule successful", data);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PatchMapping("{id}/cancel")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<APIMessageResponse> cancelExamSchedule(@PathVariable(name = "id") Long id) {
-        examScheduleService.enableAndCancelExamSchedule(id, Status.DISABLE);
-        APIMessageResponse response = new APIMessageResponse(Boolean.TRUE, "Cancel exam schedule successful !");
+    public ResponseEntity<APIResponse<ExamScheduleDTO>> cancelExamSchedule(@PathVariable(name = "id") Long id) {
+        ExamScheduleDTO data = examScheduleService.enableAndCancelExamSchedule(id, Status.DISABLE);
+        APIResponse<ExamScheduleDTO> response = new APIResponse<>("Cancel exam schedule successful", data);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

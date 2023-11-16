@@ -11,7 +11,7 @@ import com.app.lika.payload.pagination.PaginationCriteria;
 import com.app.lika.payload.pagination.SortBy;
 import com.app.lika.payload.pagination.SortOrder;
 import com.app.lika.payload.request.UserRequest;
-import com.app.lika.payload.response.APIMessageResponse;
+import com.app.lika.payload.response.APIResponse;
 import com.app.lika.repository.RoleRepository;
 import com.app.lika.repository.UserRepository;
 import com.app.lika.repository.specification.UserSpecification;
@@ -58,15 +58,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public PagedResponse<UserProfile> getAllUsers(PaginationCriteria paginationCriteria) {
-
         SortBy sort = paginationCriteria.getSortBy();
-        List<String> userFields = Arrays.stream(User.class.getDeclaredFields())
-                .map(Field::getName)
-                .toList();
-        if (!userFields.contains(sort.getField())) {
-            throw new BadRequestException("Sort field not found!");
-        }
-
         Pageable pageRequest;
         if (sort.getSortOrder().equals(SortOrder.ASC)) {
             pageRequest = PageRequest.of(paginationCriteria.getPageNumber(),
@@ -80,11 +72,9 @@ public class UserServiceImpl implements UserService {
 
         Page<User> users;
         if (!paginationCriteria.isFilterByEmpty() || StringUtils.isNotEmpty(paginationCriteria.getQuery())) {
-            System.out.println("đã vào");
             UserSpecification userSpecification = new UserSpecification(paginationCriteria.getFilters().getMapOfFilters(), paginationCriteria.getQuery());
             users = userRepository.findAll(userSpecification, pageRequest);
-        }
-        else{
+        } else {
             users = userRepository.findAll(pageRequest);
         }
 
@@ -113,13 +103,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User addUser(UserRequest userRequest) {
+    public UserProfile addUser(UserRequest userRequest) {
         if (Boolean.TRUE.equals(userRepository.existsByUsername(userRequest.getUsername()))) {
-            throw new APIException(HttpStatus.BAD_REQUEST, ExceptionCustomCode.USERNAME_ALREADY_EXISTS.getCode(), "Username already exists");
+            throw new APIException(HttpStatus.BAD_REQUEST, "Username already exists", ExceptionCustomCode.USERNAME_ALREADY_EXISTS.getCode());
         }
 
         if (Boolean.TRUE.equals(userRepository.existsByEmail(userRequest.getEmail()))) {
-            throw new APIException(HttpStatus.BAD_REQUEST, ExceptionCustomCode.EMAIL_ALREADY_EXISTS.getCode(), "Email already exists");
+            throw new APIException(HttpStatus.BAD_REQUEST, "Email already exists", ExceptionCustomCode.EMAIL_ALREADY_EXISTS.getCode());
         }
 
         List<RoleName> rolesRequest = userRequest.getRoles();
@@ -155,25 +145,27 @@ public class UserServiceImpl implements UserService {
                 .build();
         user.setRoles(roles);
 
-        return userRepository.save(user);
+        return userMapper.entityToUserProfile(userRepository.save(user));
     }
 
     @Override
-    public void deleteUser(String username) {
+    public UserProfile deleteUser(String username) {
         User user = userRepository.getUserByUsername(username);
-        if(user.getRoles().contains(roleRepository.findByName(RoleName.ROLE_ADMIN).get())){
+        if (user.getRoles().contains(roleRepository.findByName(RoleName.ROLE_ADMIN).get())) {
             try {
                 userRepository.delete(user);
+
+                return userMapper.entityToUserProfile(user);
             } catch (Exception ex) {
                 throw new IntegrityConstraintViolationException(USER);
             }
         }
 
-        throw new UnauthorizedException("Không thể xóa người dùng admin !");
+        throw new UnauthorizedException("You cannot delete admin users");
     }
 
     @Override
-    public void giveAdmin(String username) {
+    public UserProfile giveAdmin(String username) {
         User user = userRepository.getUserByUsername(username);
         List<Role> roles = user.getRoles();
         if (roles.contains(roleRepository.findByName(RoleName.ROLE_TEACHER).get())
@@ -183,16 +175,14 @@ public class UserServiceImpl implements UserService {
                     .orElseThrow(() -> new AppException(USER_ROLE_NOT_SET)));
             user.setRoles(roles);
 
-            userRepository.save(user);
-            return;
+            return userMapper.entityToUserProfile(userRepository.save(user));
         }
 
-        APIMessageResponse apiMessageResponse = new APIMessageResponse(Boolean.FALSE, "You don't give role to user: " + user.getUsername());
-        throw new UnauthorizedException(apiMessageResponse);
+        throw new BadRequestException("You don't give role to user: " + user.getUsername());
     }
 
     @Override
-    public User updateUser(User newUser, String username, UserPrincipal currentUser) {
+    public UserProfile updateUser(UserRequest newUser, String username, UserPrincipal currentUser) {
         User user = userRepository.getUserByUsername(username);
 
         if (user.getId().equals(currentUser.getId())
@@ -206,19 +196,18 @@ public class UserServiceImpl implements UserService {
             user.setDateOfBirth(newUser.getDateOfBirth());
             user.setEmail(newUser.getEmail());
 
-            return userRepository.save(user);
+            return userMapper.entityToUserProfile(userRepository.save(user));
         }
 
-        APIMessageResponse apiMessageResponse = new APIMessageResponse(Boolean.FALSE, "You don't have permission to update profile of :" + username);
-        throw new UnauthorizedException(apiMessageResponse);
+        throw new UnauthorizedException("You don't have permission to update profile of :" + username);
     }
 
     @Override
-    public void activateOrDeactivateUser(String username, Status status) {
+    public UserProfile activateOrDeactivateUser(String username, Status status) {
         User user = userRepository.getUserByUsername(username);
         user.setStatus(status);
 
-        userRepository.save(user);
+        return userMapper.entityToUserProfile(userRepository.save(user));
     }
 
 }

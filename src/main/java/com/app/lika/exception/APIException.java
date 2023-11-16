@@ -1,46 +1,39 @@
 package com.app.lika.exception;
 
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.springframework.http.HttpStatus;
 
+@EqualsAndHashCode(callSuper = true)
+@Data
 public class APIException extends RuntimeException {
 
     private static final long serialVersionUID = -6593330219878485669L;
 
     private final HttpStatus status;
-    private Integer code;
+
     private final String message;
 
-    public APIException(HttpStatus status, int code, String message) {
-        super();
-        this.status = status;
-        this.code = code;
-        this.message = message;
-    }
+    private final Integer code;
 
     public APIException(HttpStatus status, String message) {
         super();
         this.status = status;
         this.message = message;
-        this.code = null;
+        this.code = status.value();
     }
 
-    public APIException(HttpStatus status, int code, String message, Throwable exception) {
+    public APIException(HttpStatus status, String message, Integer code) {
+        super();
+        this.status = status;
+        this.message = message;
+        this.code = code;
+    }
+
+    public APIException(HttpStatus status, String message, Throwable exception) {
         super(exception);
         this.status = status;
-        this.code = code;
         this.message = message;
+        this.code = status.value();
     }
-
-    public HttpStatus getStatus() {
-        return status;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public Integer getCode() {
-        return code;
-    }
-
 }

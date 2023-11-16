@@ -133,7 +133,7 @@ public class SubjectServiceImpl implements SubjectService {
 
     @Override
     @Transactional
-    public Subject addSubject(CreateSubjectRequest subjectRequest) {
+    public SubjectDTO addSubject(CreateSubjectRequest subjectRequest) {
         if (Boolean.TRUE.equals(subjectRepository.existsBySubjectId(subjectRequest.getSubjectId()))) {
             throw new BadRequestException("SubjectId is already taken!");
         }
@@ -149,7 +149,7 @@ public class SubjectServiceImpl implements SubjectService {
         }
         subject.setChapters(chapters);
 
-        return subjectRepository.save(subject);
+        return subjectMapper.entityToSubjectDto(subjectRepository.save(subject));
     }
 
     @Override
@@ -188,11 +188,13 @@ public class SubjectServiceImpl implements SubjectService {
     }
 
     @Override
-    public void deleteSubject(String id) {
+    public SubjectDTO deleteSubject(String id) {
         Subject subject = subjectRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(AppConstants.SUBJECT, AppConstants.ID, id));
         try {
             subjectRepository.delete(subject);
+
+            return subjectMapper.entityToSubjectDto(subject);
         } catch (Exception e) {
             throw new IntegrityConstraintViolationException(AppConstants.SUBJECT);
         }
