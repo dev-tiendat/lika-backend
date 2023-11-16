@@ -1,6 +1,5 @@
 package com.app.lika.payload.request;
 
-import com.app.lika.payload.DTO.CriteriaDTO;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -20,8 +19,5 @@ public class CreateExamSetRequest {
         @NotNull
         private Short quantityOfExam;
 
-//        private List<Long> questionIdList;
-
-        private List<CriteriaDTO> criteria;
-
+        private List<CriteriaRequest> criteria;
 }

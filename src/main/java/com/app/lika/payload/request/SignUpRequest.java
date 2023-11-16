@@ -15,12 +15,12 @@ public class SignUpRequest {
     private String username;
 
     @NotBlank
-    @Size(min = 8, max = 255)
-    private String password;
-
-    @NotBlank
     @Email
     private String email;
+
+    @NotBlank
+    @Size(min = 8, max = 255)
+    private String password;
 
     @NotBlank
     private String firstName;
@@ -30,11 +30,12 @@ public class SignUpRequest {
 
     private String address;
 
+    @NotNull
     private Gender gender;
 
+    @NotNull
     private Date dateOfBirth;
 
-    private Status status;
-
+    @NotNull
     private RoleName role;
 }

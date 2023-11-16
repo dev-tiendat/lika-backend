@@ -1,6 +1,7 @@
 package com.app.lika.payload.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.AllArgsConstructor;
@@ -9,6 +10,7 @@ import org.springframework.http.HttpStatus;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -22,6 +24,7 @@ public class APIResponse<T> implements Serializable {
     private Integer errorCode;
 
     @JsonProperty("message")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String message;
 
     @JsonProperty("data")
@@ -32,7 +35,7 @@ public class APIResponse<T> implements Serializable {
 
     public APIResponse() {
         this.errorCode = 0;
-        this.message = "";
+        this.message = null;
         this.data = null;
     }
 
@@ -56,4 +59,5 @@ public class APIResponse<T> implements Serializable {
         this(errorCode, message);
         this.status = status;
     }
+
 }

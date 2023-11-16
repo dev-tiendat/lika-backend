@@ -22,8 +22,7 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping("/v1/api/users")
 public class UserController {
-    private static final String[] SORT_COLUMNS = new String[]{"id", "firstName", "lastName", "username"};
-
+    private static final String[] SORT_COLUMNS = new String[]{"id", "firstName", "lastName", "username","email","dateOfBirth"};
 
     @Autowired
     private UserService userService;

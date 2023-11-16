@@ -1,6 +1,5 @@
 package com.app.lika.payload.DTO;
 
-import com.app.lika.model.Exam;
 import com.app.lika.model.examSet.Status;
 import com.app.lika.payload.response.SubjectNameResponse;
 import lombok.Data;

@@ -1,12 +1,11 @@
-package com.app.lika.payload.DTO;
+package com.app.lika.payload.request;
 
-import com.app.lika.model.Chapter;
 import com.app.lika.model.question.Level;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
-public class CriteriaDTO {
+public class CriteriaRequest {
 
     private Long id;
 
@@ -17,5 +16,5 @@ public class CriteriaDTO {
     private Level level;
 
     @NotNull
-    private Chapter chapter;
+    private Long chapterId;
 }

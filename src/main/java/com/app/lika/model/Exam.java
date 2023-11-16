@@ -2,6 +2,7 @@ package com.app.lika.model;
 
 import com.app.lika.model.examSet.ExamSet;
 import com.app.lika.model.question.Question;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -28,6 +29,7 @@ public class Exam {
     private Integer examCode;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonBackReference
     private ExamSet examSet;
 
     @ManyToMany(fetch = FetchType.EAGER)

@@ -11,7 +11,8 @@ import com.app.lika.model.examSet.ExamSet;
 import com.app.lika.model.examSet.Status;
 import com.app.lika.model.question.Level;
 import com.app.lika.model.question.Question;
-import com.app.lika.payload.DTO.CriteriaDTO;
+import com.app.lika.model.user.User;
+import com.app.lika.payload.request.CriteriaRequest;
 import com.app.lika.payload.DTO.ExamSetDTO;
 import com.app.lika.payload.request.CreateExamSetRequest;
 import com.app.lika.repository.*;
@@ -32,9 +33,7 @@ public class ExamSetServiceImpl implements ExamSetService {
 
     private final SubjectRepository subjectRepository;
     private final ExamSetRepository examSetRepository;
-
     private final ChapterRepository chapterRepository;
-
     private final UserRepository userRepository;
     private final ExamSetMapper examSetMapper;
     private final QuestionRepository questionRepository;
@@ -52,7 +51,7 @@ public class ExamSetServiceImpl implements ExamSetService {
 
     @Override
     @Transactional
-    public ExamSet addExamSetService(CreateExamSetRequest request) {
+    public ExamSetDTO addExamSetService(CreateExamSetRequest request, UserPrincipal currentUser) {
         Subject subject = subjectRepository.findById(request.getSubjectId())
                 .orElseThrow(() -> new ResourceNotFoundException(AppConstants.SUBJECT, AppConstants.SUBJECT_ID, request.getSubjectId()));
         Short quantityOfExams = request.getQuantityOfExam();
@@ -62,43 +61,53 @@ public class ExamSetServiceImpl implements ExamSetService {
         List<Criteria> criteriaList = new ArrayList<>();
         List<List<Question>> filteredQuestionsList = new ArrayList<>();
 
-        for (CriteriaDTO criteriaRequest : request.getCriteria()) {
+        for (CriteriaRequest criteriaRequest : request.getCriteria()) {
             Chapter chapter = getChapterByIdOrThrow(criteriaRequest.getChapterId());
             Level level = criteriaRequest.getLevel();
             Short quantity = criteriaRequest.getQuantity();
 
-            List<Question> questionOptionsList = getQuestionsByChapterAndLevel(chapter, level, quantityOfExams);
-            validateQuestionOptions(quantityOfExams, quantity, questionOptionsList.size());
-
+            List<Question> questionOptionsList = questionRepository.findByChapterAndLevel(chapter, level);
             Collections.shuffle(questionOptionsList);
-            List<Question> selectedQuestions = questionOptionsList.subList(0, quantityOfExams > 1 ? quantity : getMinimumOptionQuestion(quantity));
+            List<Question> selectedQuestions = questionOptionsList.subList(0, (int) (quantity * Math.ceil((quantityOfExams + 1) / 2.0)));
             filteredQuestionsList.add(selectedQuestions);
 
             Criteria newCriteria = createNewCriteria(examSet, chapter, level, quantity);
             criteriaList.add(newCriteria);
         }
 
-        initializeExamSet(examSet, request.getName(), subject, criteriaList, quantityOfExams, filteredQuestionsList);
+        examSet.setName(request.getName());
+        examSet.setStatus(Status.UNUSED);
+        examSet.setCriteria(criteriaList);
+        examSet.setSubject(subject);
+        User user = userRepository.getUser(currentUser);
+        examSet.setCreatedBy(user);
+        examSet.setUpdatedBy(user);
 
-        return examSetRepository.save(examSet);
+        List<Exam> exams = new ArrayList<>();
+        List<Integer> codeList = RandomUtils.getRandomArrayInt(100, 500, quantityOfExams);
+        for (int i = 0; i < quantityOfExams; i++) {
+            List<Question> questions = new ArrayList<>();
+            for (int j = 0; j < filteredQuestionsList.size(); j++) {
+                List<Question> filteredQuestion = filteredQuestionsList.get(j);
+                Collections.shuffle(filteredQuestion);
+                questions.addAll(filteredQuestion.subList(0, criteriaList.get(j).getQuantity()));
+            }
+
+            Exam exam = new Exam();
+            exam.setExamCode(codeList.get(i));
+            exam.setExamSet(examSet);
+            exam.setQuestions(questions);
+            exams.add(exam);
+        }
+        examSet.setExams(exams);
+
+        return examSetMapper.entityToExamSetDto(examSetRepository.save(examSet));
     }
 
 
     private Chapter getChapterByIdOrThrow(Long chapterId) {
         return chapterRepository.findById(chapterId)
                 .orElseThrow(() -> new ResourceNotFoundException(AppConstants.CHAPTER, AppConstants.ID, chapterId));
-    }
-
-    private List<Question> getQuestionsByChapterAndLevel(Chapter chapter, Level level, Short quantityOfExams) {
-        List<Question> questionOptionsList = questionRepository.findByChapterAndLevel(chapter, level);
-        return questionOptionsList.subList(0, quantityOfExams > 1 ? quantityOfExams : getMinimumOptionQuestion(quantityOfExams));
-    }
-
-    private void validateQuestionOptions(Short quantityOfExams, Short quantity, int questionOptionsSize) {
-        int minimumOptionQuestion = getMinimumOptionQuestion(quantityOfExams);
-        if ((quantityOfExams > 1 && questionOptionsSize < minimumOptionQuestion * 2) || questionOptionsSize < quantity) {
-            throw new BadRequestException("Insufficient %s level questions to generate exam questions!");
-        }
     }
 
     private Criteria createNewCriteria(ExamSet examSet, Chapter chapter, Level level, Short quantity) {
@@ -110,31 +119,9 @@ public class ExamSetServiceImpl implements ExamSetService {
         return newCriteria;
     }
 
-    private void initializeExamSet(ExamSet examSet, String name, Subject subject, List<Criteria> criteriaList, Short quantityOfExams, List<List<Question>> filteredQuestionsList) {
-        examSet.setName(name);
-        examSet.setStatus(Status.UNUSED);
-        examSet.setCriteria(criteriaList);
-        examSet.setSubject(subject);
-
-        List<Exam> exams = new ArrayList<>();
-        List<Integer> codeList = RandomUtils.getRandomArrayInt(100, 300, quantityOfExams);
-        for (int i = 0; i < quantityOfExams; i++) {
-            Exam exam = new Exam();
-            exam.setExamCode(codeList.get(i));
-            exam.setExamSet(examSet);
-            exam.setQuestions(filteredQuestionsList.get(i).subList(0, criteriaList.get(i).getQuantity()));
-            exams.add(exam);
-        }
-        examSet.setExams(exams);
-    }
-
-    private int getMinimumOptionQuestion(Short quantityOfExams) {
-        return (int) Math.ceil((double) quantityOfExams / 2);
-    }
-
     public void checkQuantityOfExam(Short quantity) {
         if (quantity < 1 || quantity > 10) {
-            throw new BadRequestException("Number of exam questions must be between 1 and 10!");
+            throw new BadRequestException("Number of exam questions must be between 1 and 10 !");
         }
     }
 

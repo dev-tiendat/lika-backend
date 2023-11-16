@@ -86,49 +86,44 @@ public class RestControllerExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseBody
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<ExceptionResponse> resolveException(MethodArgumentNotValidException exception) {
+    public ResponseEntity<APIResponse> resolveException(MethodArgumentNotValidException exception) {
         List<FieldError> fieldErrors = exception.getBindingResult().getFieldErrors();
-        List<String> messages = new ArrayList<>(fieldErrors.size());
-        for (FieldError error : fieldErrors) {
-            messages.add(error.getField() + "-" + error.getDefaultMessage());
-        }
-        return new ResponseEntity<>(new ExceptionResponse(HttpStatus.BAD_REQUEST.getReasonPhrase(), HttpStatus.BAD_REQUEST.value(), messages), HttpStatus.BAD_REQUEST);
+        String message = fieldErrors.get(0).getField() + "-" + fieldErrors.get(0).getDefaultMessage();
+        APIResponse apiResponse = new APIResponse<>(HttpStatus.BAD_REQUEST.value(), message);
+
+        return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
     }
 
 
     @ExceptionHandler({MethodArgumentTypeMismatchException.class})
     @ResponseBody
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<ExceptionResponse> resolveException(MethodArgumentTypeMismatchException ex) {
+    public ResponseEntity<APIResponse> resolveException(MethodArgumentTypeMismatchException ex) {
         String message = "Parameter '" + ex.getParameter().getParameterName() + "' must be '"
                 + Objects.requireNonNull(ex.getRequiredType()).getSimpleName() + "'";
-        List<String> messages = new ArrayList<>(1);
-        messages.add(message);
-        return new ResponseEntity<>(new ExceptionResponse(HttpStatus.BAD_REQUEST.getReasonPhrase(),
-                HttpStatus.BAD_REQUEST.value(), messages), HttpStatus.BAD_REQUEST);
+        APIResponse apiResponse = new APIResponse<>(HttpStatus.BAD_REQUEST.value(), message);
+
+        return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler({HttpRequestMethodNotSupportedException.class})
     @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
     @ResponseBody
-    public ResponseEntity<ExceptionResponse> resolveException(HttpRequestMethodNotSupportedException ex) {
+    public ResponseEntity<APIResponse> resolveException(HttpRequestMethodNotSupportedException ex) {
         String message = "Request method '" + ex.getMethod() + "' not supported. List of all supported methods - "
                 + ex.getSupportedHttpMethods();
-        List<String> messages = new ArrayList<>(1);
-        messages.add(message);
+        APIResponse apiResponse = new APIResponse<>(HttpStatus.METHOD_NOT_ALLOWED.value(), message);
 
-        return new ResponseEntity<>(new ExceptionResponse(HttpStatus.METHOD_NOT_ALLOWED.getReasonPhrase(),
-                HttpStatus.METHOD_NOT_ALLOWED.value(), messages), HttpStatus.METHOD_NOT_ALLOWED);
+        return new ResponseEntity<>(apiResponse, HttpStatus.METHOD_NOT_ALLOWED);
     }
 
     @ExceptionHandler({HttpMessageNotReadableException.class})
     @ResponseBody
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<ExceptionResponse> resolveException(HttpMessageNotReadableException ex) {
+    public ResponseEntity<APIResponse> resolveException(HttpMessageNotReadableException ex) {
         String message = "Please provide Request Body in valid JSON format";
-        List<String> messages = new ArrayList<>(1);
-        messages.add(message);
-        return new ResponseEntity<>(new ExceptionResponse(HttpStatus.BAD_REQUEST.getReasonPhrase(),
-                HttpStatus.BAD_REQUEST.value(), messages), HttpStatus.BAD_REQUEST);
+        APIResponse apiResponse = new APIResponse<>(HttpStatus.BAD_REQUEST.value(), message);
+
+        return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
     }
 }

@@ -3,6 +3,7 @@ package com.app.lika.model.examSet;
 import com.app.lika.model.Criteria;
 import com.app.lika.model.Exam;
 import com.app.lika.model.Subject;
+import com.app.lika.model.audit.DateAudit;
 import com.app.lika.model.audit.UserDateAudit;
 import com.app.lika.model.user.User;
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -22,7 +23,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "exam_sets")
-public class ExamSet extends UserDateAudit {
+public class ExamSet extends DateAudit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -37,7 +38,7 @@ public class ExamSet extends UserDateAudit {
     @Enumerated(EnumType.ORDINAL)
     private Status status;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @JoinColumn(name = "subject_id")
     private Subject subject;
 
@@ -47,6 +48,14 @@ public class ExamSet extends UserDateAudit {
     @OneToMany(mappedBy = "examSet", cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
     @JsonBackReference
     private List<Criteria> criteria;
+
+    @OneToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @JoinColumn(name = "created_by")
+    private User createdBy;
+
+    @OneToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @JoinColumn(name = "updated_by")
+    private User updatedBy;
 
     @Override
     public boolean equals(Object o) {

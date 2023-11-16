@@ -8,6 +8,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
@@ -46,6 +47,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
             body.setMessage("JWT token is expired");
         } else {
             body.setMessage(authException.getMessage());
+            body.setErrorCode(HttpStatus.UNAUTHORIZED.value());
         }
 
         final ObjectMapper mapper = new ObjectMapper();
