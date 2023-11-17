@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.codehaus.jackson.annotate.JsonManagedReference;
 
 import java.util.Objects;
 
@@ -37,6 +38,7 @@ public class Answer {
     @Column(name = "option_letter")
     private String optionLetter;
 
+    @JsonManagedReference
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @JoinColumn(name = "question_id")
     private Question question;

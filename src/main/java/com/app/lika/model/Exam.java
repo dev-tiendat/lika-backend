@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.codehaus.jackson.annotate.JsonManagedReference;
 
 import java.util.List;
 
@@ -28,11 +29,17 @@ public class Exam {
     @Column(name = "exam_code")
     private Integer examCode;
 
+    @JsonManagedReference
     @ManyToOne(fetch = FetchType.LAZY)
-    @JsonBackReference
     private ExamSet examSet;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "exam_question", joinColumns = @JoinColumn(name = "exam_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "question_id", referencedColumnName = "id"))
     private List<Question> questions;
+
+    public Exam(Integer examCode, ExamSet examSet, List<Question> questions) {
+        this.examCode = examCode;
+        this.examSet = examSet;
+        this.questions = questions;
+    }
 }

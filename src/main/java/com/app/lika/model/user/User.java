@@ -5,6 +5,7 @@ import com.app.lika.model.question.Question;
 import com.app.lika.model.audit.DateAudit;
 import com.app.lika.model.role.Role;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
@@ -86,6 +87,7 @@ public class User extends DateAudit {
     @JsonBackReference
     private List<Question> questions;
 
+    @JsonIgnore
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "student_exam_schedule", joinColumns = @JoinColumn(name = "student_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "exam_schedule_id", referencedColumnName = "id"))
     private List<ExamSchedule> examSchedules;

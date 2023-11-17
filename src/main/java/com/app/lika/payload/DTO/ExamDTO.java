@@ -2,6 +2,7 @@ package com.app.lika.payload.DTO;
 
 import com.app.lika.model.examSet.ExamSet;
 import com.app.lika.model.question.Question;
+import com.app.lika.payload.response.QuestionResponse;
 import lombok.Data;
 
 import java.util.List;
@@ -12,7 +13,5 @@ public class ExamDTO {
 
     private Integer examCode;
 
-    private ExamSet examSet;
-
-    private List<Question> questions;
+    private List<QuestionResponse> questions;
 }

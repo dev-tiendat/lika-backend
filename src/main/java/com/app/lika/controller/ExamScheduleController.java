@@ -49,7 +49,7 @@ public class ExamScheduleController {
         PaginationCriteria paginationCriteria = new PaginationCriteria(page, size, query, sortBy, filters);
 
         PagedResponse<ExamScheduleDTO> data = examScheduleService.getAllExamSchedule(paginationCriteria);
-        APIResponse<PagedResponse<ExamScheduleDTO>> response = new APIResponse<>("Get all users successful!", data);
+        APIResponse<PagedResponse<ExamScheduleDTO>> response = new APIResponse<>("Get all exam schedule successful !", data);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

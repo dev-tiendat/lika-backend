@@ -10,6 +10,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.codehaus.jackson.annotate.JsonManagedReference;
 
 import java.util.List;
 import java.util.Objects;
@@ -35,7 +36,6 @@ public class Chapter {
     @Column(name = "chapter_name")
     private String chapterName;
 
-    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @JoinColumn(name = "subject_id")
     private Subject subject;

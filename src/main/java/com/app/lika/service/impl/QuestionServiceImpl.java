@@ -125,7 +125,6 @@ public class QuestionServiceImpl implements QuestionService {
         throw new BadRequestException("Request is invalid !");
     }
 
-    //    thiếu check có đề thi
     @Override
     @Transactional
     public QuestionDTO updateQuestion(QuestionRequest questionRequest, UserPrincipal currentUser, Long id) {
@@ -137,6 +136,9 @@ public class QuestionServiceImpl implements QuestionService {
                     || currentUser.getAuthorities()
                     .contains(new SimpleGrantedAuthority(RoleName.ROLE_ADMIN.toString()))
             ) {
+                if (!question.getExams().isEmpty()) {
+                    throw new BadRequestException("This question is already available for the exam, you cannot update it !");
+                }
                 question.setChapter(chapterRepository.findById(questionRequest.getChapterId())
                         .orElseThrow(() -> new BadRequestException("ChapterId not found !")));
                 question.setContent(questionRequest.getContent());

@@ -6,7 +6,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 
-@Mapper(componentModel = MappingConstants.ComponentModel.SPRING, uses = {UserMapper.class})
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING, uses = {UserMapper.class, ExamScheduleMapper.class})
 public interface ExamScheduleMapper {
     ExamScheduleDTO entityToExamScheduleDto(ExamSchedule examSchedule);
 }

@@ -1,5 +1,6 @@
 package com.app.lika.model.question;
 
+import com.app.lika.model.Exam;
 import com.app.lika.model.Status;
 import com.app.lika.model.answer.Answer;
 import com.app.lika.model.Chapter;
@@ -9,6 +10,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import org.codehaus.jackson.annotate.JsonManagedReference;
 
 import java.util.List;
 import java.util.Objects;
@@ -49,10 +51,12 @@ public class Question {
     @Column(name = "status")
     private Status status;
 
+    @JsonManagedReference
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "chapter_id")
     private Chapter chapter;
 
+    @JsonManagedReference
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "teacher_id")
     private User teacher;
@@ -60,6 +64,9 @@ public class Question {
     @OneToMany(mappedBy = "question", cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
     @JsonBackReference
     private List<Answer> answers;
+
+    @ManyToMany(mappedBy = "questions", cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    private List<Exam> exams;
 
     @Override
     public boolean equals(Object o) {

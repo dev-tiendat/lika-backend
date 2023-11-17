@@ -2,6 +2,7 @@ package com.app.lika.payload.DTO;
 
 import com.app.lika.model.Status;
 import com.app.lika.model.examSet.ExamSet;
+import com.app.lika.payload.response.ExamSetInfoResponse;
 import lombok.Data;
 
 import java.util.Date;
@@ -23,7 +24,7 @@ public class ExamScheduleDTO {
 
     private Status status;
 
-    private ExamSet examSet;
+    private ExamSetInfoResponse examSet;
 
     private UserSummary teacher;
 

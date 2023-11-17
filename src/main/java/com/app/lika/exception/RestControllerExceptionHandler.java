@@ -32,6 +32,13 @@ public class RestControllerExceptionHandler {
         return new ResponseEntity<>(apiResponse, status);
     }
 
+    @ExceptionHandler(AppException.class)
+    public ResponseEntity<APIResponse> resolveException(AppException exception){
+        APIResponse apiResponse = exception.getApiResponse();
+
+        return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<APIResponse> resolveException(BadRequestException exception) {
         APIResponse apiResponse = exception.getApiResponse();

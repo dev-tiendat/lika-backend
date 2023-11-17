@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.codehaus.jackson.annotate.JsonManagedReference;
 
 import java.util.Objects;
 
@@ -32,6 +33,7 @@ public class Criteria {
     @Column(name = "quantity")
     private Short quantity;
 
+    @JsonManagedReference
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     private ExamSet examSet;
@@ -40,6 +42,13 @@ public class Criteria {
     @OneToOne
     @JoinColumn(name = "chapter_id")
     private Chapter chapter;
+
+    public Criteria(Level level, Short quantity, ExamSet examSet, Chapter chapter) {
+        this.level = level;
+        this.quantity = quantity;
+        this.examSet = examSet;
+        this.chapter = chapter;
+    }
 
     @Override
     public boolean equals(Object o) {

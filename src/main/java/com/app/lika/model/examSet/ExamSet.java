@@ -4,9 +4,9 @@ import com.app.lika.model.Criteria;
 import com.app.lika.model.Exam;
 import com.app.lika.model.Subject;
 import com.app.lika.model.audit.DateAudit;
-import com.app.lika.model.audit.UserDateAudit;
 import com.app.lika.model.user.User;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -14,7 +14,6 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.util.List;
-import java.util.Objects;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
@@ -43,12 +42,14 @@ public class ExamSet extends DateAudit {
     private Subject subject;
 
     @OneToMany(mappedBy = "examSet",cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
+    @JsonIgnore
     private List<Exam> exams;
 
     @OneToMany(mappedBy = "examSet", cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
-    @JsonBackReference
+    @JsonIgnore
     private List<Criteria> criteria;
 
+    @JsonIgnore
     @OneToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @JoinColumn(name = "created_by")
     private User createdBy;
@@ -57,17 +58,12 @@ public class ExamSet extends DateAudit {
     @JoinColumn(name = "updated_by")
     private User updatedBy;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-        ExamSet examSet = (ExamSet) o;
-        return Objects.equals(id, examSet.id);
+    public ExamSet(String name, Status status, Subject subject, User createdBy, User updatedBy) {
+        this.name = name;
+        this.status = status;
+        this.subject = subject;
+        this.createdBy = createdBy;
+        this.updatedBy = updatedBy;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), id);
-    }
 }
