@@ -24,22 +24,23 @@ public class CreateSubjectRequest {
     @NotNull
     private Short creditHours;
 
-    private List<ChapterRequest> chapters;
+    @NotNull
+    private List<String> chapterNames;
 
     public void setSubjectName(String subjectName) {
         this.subjectName = subjectName.trim();
     }
 
-    public void setChapters(List<ChapterRequest> chapters) {
-        if(chapters == null){
-            this.chapters = null;
+    public void setChapterNames(List<String> chapterNames) {
+        if(chapterNames == null){
+            this.chapterNames = null;
             return;
         }
 
-        this.chapters = Collections.unmodifiableList(chapters);
+        this.chapterNames = Collections.unmodifiableList(chapterNames);
     }
 
-    public List<ChapterRequest> getChapters() {
-        return chapters == null ? null : new ArrayList<>(chapters);
+    public List<String> getChapterNames() {
+        return new ArrayList<>(chapterNames);
     }
 }

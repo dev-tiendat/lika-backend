@@ -47,7 +47,7 @@ public class SubjectController {
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<APIResponse<PagedResponse<SubjectDTO>>> getAllSubjects(
             @RequestParam(name = "page", required = false, defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) int page,
             @RequestParam(name = "size", required = false, defaultValue = AppConstants.DEFAULT_PAGE_SIZE) int size,

@@ -13,7 +13,6 @@ import com.app.lika.payload.pagination.PagedResponse;
 import com.app.lika.payload.pagination.PaginationCriteria;
 import com.app.lika.payload.pagination.SortBy;
 import com.app.lika.payload.pagination.SortOrder;
-import com.app.lika.payload.request.ChapterRequest;
 import com.app.lika.payload.request.CreateSubjectRequest;
 import com.app.lika.payload.response.SubjectNameResponse;
 import com.app.lika.repository.ChapterRepository;
@@ -30,12 +29,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Service
 public class SubjectServiceImpl implements SubjectService {
@@ -140,12 +136,14 @@ public class SubjectServiceImpl implements SubjectService {
         Subject subject = subjectMapper.createSubjectRequestToEntity(subjectRequest);
 
         List<Chapter> chapters = new ArrayList<>();
-        for (ChapterRequest chapterRequest : subjectRequest.getChapters()) {
+        short chapterNumber = 1;
+        for (String chapterName : subjectRequest.getChapterNames()) {
             Chapter chapter = new Chapter();
-            chapter.setChapterNumber(chapterRequest.getChapterNumber());
-            chapter.setChapterName(chapterRequest.getChapterName());
+            chapter.setChapterNumber(chapterNumber);
+            chapter.setChapterName(chapterName);
             chapter.setSubject(subject);
             chapters.add(chapter);
+            chapterNumber++;
         }
         subject.setChapters(chapters);
 
@@ -164,18 +162,21 @@ public class SubjectServiceImpl implements SubjectService {
         }
 
         List<Chapter> updatedChapters = new ArrayList<>();
+        short chapterNumber = 1;
         for (ChapterDTO chapterDTO : subjectRequest.getChapters()) {
             if (chapterDTO.getId() == null) {
                 Chapter newChapter = chapterMapper.chapterDtoToEntity(chapterDTO);
+                newChapter.setChapterNumber(chapterNumber);
                 newChapter.setSubject(subject);
                 updatedChapters.add(newChapter);
             } else {
                 Chapter existingChapter = chapterRepository.findById(chapterDTO.getId())
                         .orElseThrow(() -> new BadRequestException("Chapter not found!"));
                 existingChapter.setChapterName(chapterDTO.getChapterName());
-                existingChapter.setChapterNumber(chapterDTO.getChapterNumber());
+                existingChapter.setChapterNumber(chapterNumber);
                 updatedChapters.add(existingChapter);
             }
+            chapterNumber++;
         }
 
         subject.getChapters().clear();

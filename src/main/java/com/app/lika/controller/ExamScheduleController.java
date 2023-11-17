@@ -63,7 +63,7 @@ public class ExamScheduleController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    @PostMapping("{id}")
+    @PutMapping("{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<APIResponse<ExamScheduleDTO>> updateExamSchedule(
             @RequestBody @Valid ExamScheduleRequest examScheduleRequest,
