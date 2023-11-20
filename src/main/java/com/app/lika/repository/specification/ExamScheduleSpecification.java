@@ -42,10 +42,10 @@ public class ExamScheduleSpecification extends SearchCriteria<ExamSchedule> {
 
         if (StringUtils.isNotEmpty(search)) {
             Predicate likeQuestionContent = buildPredicate(SearchOperation.MATCH, root.get("title"), search);
-            Predicate equalQuestionId = buildPredicate(SearchOperation.EQUAL, root.get("id"), search);
+            Predicate likeQuestionId = buildPredicate(SearchOperation.MATCH, root.get("id"), search);
             Predicate likeFirstName = buildPredicate(SearchOperation.MATCH, examScheduleUserJoin.get("firstName"), search);
             Predicate likeLastName = buildPredicate(SearchOperation.MATCH, examScheduleUserJoin.get("lastName"), search);
-            predicates.add(builder.or(likeLastName, likeFirstName, equalQuestionId, likeQuestionContent));
+            predicates.add(builder.or(likeLastName, likeFirstName, likeQuestionId, likeQuestionContent));
         }
 
         return builder.and(predicates.toArray(new Predicate[0]));

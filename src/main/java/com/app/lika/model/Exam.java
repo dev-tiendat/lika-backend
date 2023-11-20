@@ -31,6 +31,7 @@ public class Exam {
 
     @JsonManagedReference
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "exam_set_id")
     private ExamSet examSet;
 
     @ManyToMany(fetch = FetchType.LAZY)

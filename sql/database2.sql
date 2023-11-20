@@ -138,9 +138,12 @@ CREATE TABLE `exam_schedule`(
 	`time_allowance` smallint NOT NULL,
 	`status` tinyint(1) NOT NULL,
     `exam_set_id` bigint unsigned,
+    `teacher_id` bigint unsigned,
     PRIMARY KEY(`id`),
     KEY `fk_exam_schedule_exam_set_id` (`exam_set_id`),
-    CONSTRAINT `fk_exam_schedule_exam_set_id` FOREIGN KEY (`exam_set_id`) REFERENCES `exam_sets` (`id`)
+    KEY `fk_exam_schedule_teacher_id` (`teacher_id`),
+    CONSTRAINT `fk_exam_schedule_exam_set_id` FOREIGN KEY (`exam_set_id`) REFERENCES `exam_sets` (`id`),
+    CONSTRAINT `fk_exam_schedule_teacher_id` FOREIGN KEY (`teacher_id`) REFERENCES `users` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET = utf8mb4;
 
 CREATE TABLE `student_exam_schedule`(
@@ -153,8 +156,9 @@ CREATE TABLE `student_exam_schedule`(
 ) ENGINE=InnoDB DEFAULT CHARSET = utf8mb4;
 
 CREATE TABLE `exam_results`(
-	`id` bigint unsigned NOT NULL,
+	`id` bigint unsigned NOT NULL AUTO_INCREMENT,
     `grade` float NOT NULL,
+    `number_of_right_anwser` int NOT NULL DEFAULT 0,
     `exam_schedule_id` bigint unsigned NOT NULL,
     `student_id` bigint unsigned NOT NULL,
     `exam_id` bigint unsigned,
@@ -169,14 +173,13 @@ CREATE TABLE `exam_results`(
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET = utf8mb4;
 
 CREATE TABLE `exam_result_details`(
-	`id` bigint unsigned NOT NULL,
-    `selected_option` char(1) NOT NULL,
-    `question_id` bigint unsigned NOT NULL,
+	`id` bigint unsigned NOT NULL AUTO_INCREMENT, 
+    `answer_id` bigint unsigned NOT NULL,
     `exam_result_id` bigint unsigned NOT NULL,
     PRIMARY KEY (`id`),
-    KEY `fk_exam_result_detail_question_id` (`question_id`),
+    KEY `fk_exam_result_detail_answer_id` (`answer_id`),
     KEY `fk_exam_result_detail_exam_result_id` (`exam_result_id`),
-    CONSTRAINT `fk_exam_result_detail_question_id` FOREIGN KEY (`question_id`) REFERENCES `questions` (`id`),
+    CONSTRAINT `fk_exam_result_detail_answer_id` FOREIGN KEY (`answer_id`) REFERENCES `answers` (`id`),
     CONSTRAINT `fk_exam_result_detail_exam_result_id` FOREIGN KEY (`exam_result_id`) REFERENCES `exam_results` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET = utf8mb4;
 
@@ -390,5 +393,5 @@ INSERT INTO `questions` (`question_content`, `level`, `question_type`, `chapter_
 VALUES
 ('What is the main function of the liver?', 2, 1, 4, 6, 1),
 ('Solve the system of equations: 2x + y = 5, x - y = 1', 3, 1, 1, 4, 1),
-('Explain the process of DNA replication.', 2, 2, 8, 6, 1),
+('Explain the process of DNA replication.', 2, 2, 8, 6, 1)
 -- ... (Thêm câu hỏi khác)

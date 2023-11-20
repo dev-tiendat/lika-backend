@@ -3,6 +3,7 @@ package com.app.lika.repository;
 import com.app.lika.model.Exam;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface ExamRepository extends JpaRepository<Exam, Long> {
+import java.util.Optional;
 
+public interface ExamRepository extends JpaRepository<Exam, Long> {
 }

@@ -1,6 +1,7 @@
 package com.app.lika.model.user;
 
 import com.app.lika.model.ExamSchedule;
+import com.app.lika.model.examResult.ExamResult;
 import com.app.lika.model.question.Question;
 import com.app.lika.model.audit.DateAudit;
 import com.app.lika.model.role.Role;
@@ -91,6 +92,10 @@ public class User extends DateAudit {
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "student_exam_schedule", joinColumns = @JoinColumn(name = "student_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "exam_schedule_id", referencedColumnName = "id"))
     private List<ExamSchedule> examSchedules;
+
+    @OneToMany(mappedBy = "student")
+    @JsonBackReference
+    private List<ExamResult> examResults;
 
     public User(String username, String password, String email, String firstName, String lastName, String address, Gender gender, Date dateOfBirth, Status status) {
         this.username = username;

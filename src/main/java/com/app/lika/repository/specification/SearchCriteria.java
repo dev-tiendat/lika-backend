@@ -33,23 +33,24 @@ public abstract class SearchCriteria<T> implements Specification<T> {
     }
 
     public Predicate buildPredicate(SearchOperation operation, Expression<String> keyExpression, String value) {
+        Expression<String> expression = keyExpression.as(String.class);
         return switch (operation) {
-            case GREATER_THAN -> builder.greaterThan(keyExpression, value);
-            case LESS_THAN -> builder.lessThan(keyExpression, value);
-            case GREATER_THAN_EQUAL -> builder.greaterThanOrEqualTo(keyExpression, value);
-            case LESS_THAN_EQUAL -> builder.lessThanOrEqualTo(keyExpression, value);
-            case NOT_EQUAL -> builder.notEqual(keyExpression, value);
-            case EQUAL -> builder.equal(keyExpression, value);
-            case MATCH -> builder.like(builder.lower(keyExpression), "%" + value.toLowerCase() + "%");
-            case MATCH_END -> builder.like(builder.lower(keyExpression), value.toLowerCase() + "%");
-            case MATCH_START -> builder.like(builder.lower(keyExpression), "%" + value.toLowerCase());
-            case IN -> builder.in(keyExpression).value(value);
-            case NOT_IN -> builder.not(keyExpression.in(value));
+            case GREATER_THAN -> builder.greaterThan(expression, value);
+            case LESS_THAN -> builder.lessThan(expression, value);
+            case GREATER_THAN_EQUAL -> builder.greaterThanOrEqualTo(expression, value);
+            case LESS_THAN_EQUAL -> builder.lessThanOrEqualTo(expression, value);
+            case NOT_EQUAL -> builder.notEqual(expression, value);
+            case EQUAL -> builder.equal(expression, value);
+            case MATCH -> builder.like(builder.lower(expression), "%" + value.toLowerCase() + "%");
+            case MATCH_END -> builder.like(builder.lower(expression), value.toLowerCase() + "%");
+            case MATCH_START -> builder.like(builder.lower(expression), "%" + value.toLowerCase());
+            case IN -> builder.in(expression).value(value);
+            case NOT_IN -> builder.not(expression.in(value));
         };
-
     }
 
     public void setFilters(Map<String, String> filters) {
         this.filters = filters == null ? new HashMap<>() : filters;
     }
+
 }

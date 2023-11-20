@@ -3,6 +3,7 @@ package com.app.lika.mapper;
 import com.app.lika.model.question.Question;
 import com.app.lika.payload.DTO.QuestionDTO;
 import com.app.lika.payload.request.QuestionRequest;
+import com.app.lika.payload.response.ExamQuestion;
 import com.app.lika.payload.response.QuestionResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -17,4 +18,7 @@ public interface QuestionMapper {
     QuestionDTO entityToQuestionDto(Question question);
 
     QuestionResponse entityToQuestionResponse(QuestionResponse questionResponse);
+
+    ExamQuestion entityToExamQuestion(Question question);
+
 }

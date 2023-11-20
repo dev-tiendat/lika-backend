@@ -3,6 +3,7 @@ package com.app.lika.mapper;
 import com.app.lika.model.answer.Answer;
 import com.app.lika.payload.DTO.AnswerDTO;
 import com.app.lika.payload.request.AnswerRequest;
+import com.app.lika.payload.response.ExamAnswer;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
@@ -13,4 +14,6 @@ public interface AnswerMapper {
     Answer answerRequestToEntity(AnswerRequest answerRequest);
 
     AnswerDTO entityToAnswerDto(Answer answer);
+
+    ExamAnswer entityToExamAnswer(Answer answer);
 }

@@ -1,5 +1,6 @@
 package com.app.lika.model;
 
+import com.app.lika.model.examResult.ExamResult;
 import com.app.lika.model.examSet.ExamSet;
 import com.app.lika.model.user.User;
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -52,7 +53,7 @@ public class ExamSchedule {
     @Enumerated(EnumType.ORDINAL)
     private Status status;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "exam_set_id")
     @JsonIgnore
     private ExamSet examSet;
@@ -62,11 +63,14 @@ public class ExamSchedule {
     private User teacher;
 
     @JsonIgnore
-    @ManyToMany(fetch = FetchType.LAZY,cascade = {CascadeType.MERGE,CascadeType.PERSIST})
+    @ManyToMany(fetch = FetchType.EAGER,cascade = {CascadeType.MERGE,CascadeType.PERSIST})
     @JoinTable(name = "student_exam_schedule", joinColumns = @JoinColumn(name = "exam_schedule_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "student_id", referencedColumnName = "id"))
     private List<User> students;
 
-    public ExamSchedule(String title, String summary, Date publishedAt, Date closedAt, Integer timeAllowance, Status status, ExamSet examSet,User teacher, List<User> students) {
+    @OneToMany(mappedBy = "examSchedule", fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    @JsonBackReference
+    private List<ExamResult> examResults;
+    public ExamSchedule(String title, String summary, Date publishedAt, Date closedAt, Integer timeAllowance, Status status, ExamSet examSet,User teacher, List<User> students, List<ExamResult> examResults) {
         this.title = title;
         this.summary = summary;
         this.publishedAt = publishedAt;
@@ -76,5 +80,6 @@ public class ExamSchedule {
         this.examSet = examSet;
         this.teacher = teacher;
         this.students = students;
+        this.examResults = examResults;
     }
 }

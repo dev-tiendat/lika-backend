@@ -5,6 +5,9 @@ import com.app.lika.payload.DTO.ExamScheduleDTO;
 import com.app.lika.payload.pagination.*;
 import com.app.lika.payload.request.ExamScheduleRequest;
 import com.app.lika.payload.response.APIResponse;
+import com.app.lika.payload.response.StudentExamSchedule;
+import com.app.lika.security.CurrentUser;
+import com.app.lika.security.UserPrincipal;
 import com.app.lika.service.ExamScheduleService;
 import com.app.lika.utils.AppConstants;
 import com.app.lika.utils.PaginationUtils;
@@ -14,6 +17,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/v1/api/examSchedule")
@@ -54,8 +59,14 @@ public class ExamScheduleController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/me")
+    @PreAuthorize("hasRole('STUDENT')")
+    public ResponseEntity<APIResponse<List<StudentExamSchedule>>> getAllScheduleForMe(@CurrentUser UserPrincipal currentUser) {
+        List<StudentExamSchedule> data = examScheduleService.getAllExamScheduleForMe(currentUser);
+        APIResponse<List<StudentExamSchedule>> response = new APIResponse<>("Get all your exam schedule successful !", data);
+
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
     public ResponseEntity<APIResponse<ExamScheduleDTO>> addExamSchedule(@RequestBody @Valid ExamScheduleRequest examScheduleRequest) {
         ExamScheduleDTO data = examScheduleService.addExamSchedule(examScheduleRequest);
         APIResponse<ExamScheduleDTO> response = new APIResponse<>("Add new Exam schedule successful !", data);

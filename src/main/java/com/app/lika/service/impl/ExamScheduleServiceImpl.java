@@ -3,10 +3,11 @@ package com.app.lika.service.impl;
 import com.app.lika.exception.BadRequestException;
 import com.app.lika.exception.ResourceNotFoundException;
 import com.app.lika.mapper.ExamScheduleMapper;
+import com.app.lika.model.Exam;
 import com.app.lika.model.ExamSchedule;
 import com.app.lika.model.Status;
+import com.app.lika.model.examResult.ExamResult;
 import com.app.lika.model.examSet.ExamSet;
-import com.app.lika.model.question.Question;
 import com.app.lika.model.role.RoleName;
 import com.app.lika.model.user.User;
 import com.app.lika.payload.DTO.ExamScheduleDTO;
@@ -15,12 +16,13 @@ import com.app.lika.payload.pagination.PaginationCriteria;
 import com.app.lika.payload.pagination.SortBy;
 import com.app.lika.payload.pagination.SortOrder;
 import com.app.lika.payload.request.ExamScheduleRequest;
+import com.app.lika.payload.response.StudentExamSchedule;
 import com.app.lika.repository.ExamScheduleRepository;
 import com.app.lika.repository.ExamSetRepository;
 import com.app.lika.repository.RoleRepository;
 import com.app.lika.repository.UserRepository;
 import com.app.lika.repository.specification.ExamScheduleSpecification;
-import com.app.lika.repository.specification.QuestionSpecification;
+import com.app.lika.security.UserPrincipal;
 import com.app.lika.service.ExamScheduleService;
 import com.app.lika.utils.AppConstants;
 import com.app.lika.utils.TimeUtils;
@@ -32,6 +34,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -55,6 +58,14 @@ public class ExamScheduleServiceImpl implements ExamScheduleService {
         this.userRepository = userRepository;
         this.examScheduleMapper = examScheduleMapper;
         this.roleRepository = roleRepository;
+    }
+
+    @Override
+    public List<StudentExamSchedule> getAllExamScheduleForMe(UserPrincipal currentUser) {
+        User student = userRepository.getUser(currentUser);
+        List<ExamSchedule> examSchedules = student.getExamSchedules();
+
+        return examSchedules.stream().map(examScheduleMapper::entityToStudentExamSchedule).toList();
     }
 
     @Override
@@ -94,6 +105,7 @@ public class ExamScheduleServiceImpl implements ExamScheduleService {
 
     @Override
     public ExamScheduleDTO addExamSchedule(ExamScheduleRequest examScheduleRequest) {
+        ExamSchedule examSchedule = new ExamSchedule();
         ExamSet examSet = examScheduleRequest.getExamSetId() == null ? null
                 : examSetRepository.findById(examScheduleRequest.getExamSetId())
                 .orElseThrow(() -> new ResourceNotFoundException(AppConstants.EXAM_SET, AppConstants.ID, examScheduleRequest.getExamSetId()));
@@ -101,21 +113,46 @@ public class ExamScheduleServiceImpl implements ExamScheduleService {
         if (!teacher.getRoles().contains(roleRepository.findByName(RoleName.ROLE_TEACHER).get()))
             throw new BadRequestException(examScheduleRequest.getTeacherUsername() + " is not a teacher !");
 
-        List<User> students = examScheduleRequest.getStudentsUsernames()
-                .stream().map(username -> {
-                    User student = userRepository.getUserByUsername(username);
+        List<User> students = new ArrayList<>();
+        List<ExamResult> examResults = new ArrayList<>();
+        int countExam = 0;
+        for (String username : examScheduleRequest.getStudentsUsernames()) {
+            User student = userRepository.getUserByUsername(username);
+            if (student.getStatus() == com.app.lika.model.user.Status.INACTIVE
+                    || !student.getRoles().equals(RoleName.ROLE_STUDENT)
+            )
+                throw new BadRequestException("You cannot add teachers or admins to the exam list");
+            students.add(student);
 
-                    if (student.getStatus() == com.app.lika.model.user.Status.INACTIVE
-//                            || !student.getRoles().equals(RoleName.ROLE_STUDENT)
-                    ) {
-                        throw new BadRequestException("You cannot add teachers or admins to the exam list");
-                    }
+            if (examSet != null) {
+                List<Exam> exams = examSet.getExams();
+                Exam exam = examSet.getExams().get((countExam + exams.size()) % exams.size());
+                ExamResult examResult = new ExamResult(
+                        0.0f,
+                        exam,
+                        examSchedule,
+                        student
+                );
 
-                    return student;
-                })
-                .toList();
+                examResults.add(examResult);
+                countExam++;
+            }
+        }
 
-        ExamSchedule examSchedule = getExamSchedule(examScheduleRequest, examSet, teacher, students);
+        Date publishedAt = new Date(examScheduleRequest.getPublishedAt());
+        if (publishedAt.before(new Date()))
+            throw new BadRequestException("You cannot schedule your exam before this time");
+        Date closedAt = new Date(publishedAt.getTime() + TimeUtils.convertMinutesToMilliseconds(examScheduleRequest.getTimeAllowance()));
+        examSchedule.setTitle(examScheduleRequest.getTitle());
+        examSchedule.setSummary(examScheduleRequest.getSummary());
+        examSchedule.setPublishedAt(publishedAt);
+        examSchedule.setClosedAt(closedAt);
+        examSchedule.setTimeAllowance(examScheduleRequest.getTimeAllowance());
+        examSchedule.setStatus(Status.ENABLE);
+        examSchedule.setExamSet(examSet);
+        examSchedule.setTeacher(teacher);
+        examSchedule.setStudents(students);
+        examSchedule.setExamResults(examResults);
 
         return examScheduleMapper.entityToExamScheduleDto(examScheduleRepository.save(examSchedule));
     }
@@ -163,7 +200,7 @@ public class ExamScheduleServiceImpl implements ExamScheduleService {
             return examScheduleMapper.entityToExamScheduleDto(examScheduleRepository.save(examSchedule));
         }
 
-        throw new BadRequestException("The current exam schedule has expired and cannot be updated !");
+        throw new BadRequestException("This current exam schedule has expired and cannot be updated !");
     }
 
     @Override
@@ -177,7 +214,7 @@ public class ExamScheduleServiceImpl implements ExamScheduleService {
             return examScheduleMapper.entityToExamScheduleDto(examSchedule);
         }
 
-        throw new BadRequestException("The current exam schedule has expired and cannot be deleted !");
+        throw new BadRequestException("This current exam schedule has expired and cannot be deleted !");
     }
 
     @Override
@@ -190,25 +227,7 @@ public class ExamScheduleServiceImpl implements ExamScheduleService {
             return examScheduleMapper.entityToExamScheduleDto(examScheduleRepository.save(examSchedule));
         }
 
-        throw new BadRequestException("The current exam schedule has expired and cannot be updated !");
+        throw new BadRequestException("This current exam schedule has expired and cannot be updated !");
     }
 
-    private ExamSchedule getExamSchedule(ExamScheduleRequest examScheduleRequest, ExamSet examSet, User teacher, List<User> students) {
-        Date publishedAt = new Date(examScheduleRequest.getPublishedAt());
-        if (publishedAt.before(new Date()))
-            throw new BadRequestException("You cannot schedule your exam before this time");
-
-        Date closedAt = new Date(publishedAt.getTime() + TimeUtils.convertMinutesToMilliseconds(examScheduleRequest.getTimeAllowance()));
-        return new ExamSchedule(
-                examScheduleRequest.getTitle(),
-                examScheduleRequest.getSummary(),
-                publishedAt,
-                closedAt,
-                examScheduleRequest.getTimeAllowance(),
-                Status.ENABLE,
-                examSet,
-                teacher,
-                students
-        );
-    }
 }

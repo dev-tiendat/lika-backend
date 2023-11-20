@@ -4,20 +4,25 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
 public class CreateExamSetRequest {
-        @NotNull
-        @NotBlank
-        private String name;
+    @NotNull
+    @NotBlank
+    private String name;
 
-        @NotNull
-        @NotBlank
-        private String subjectId;
+    @NotNull
+    @NotBlank
+    private String subjectId;
 
-        @NotNull
-        private Short quantityOfExam;
+    @NotNull
+    private Short quantityOfExam;
 
-        private List<CriteriaRequest> criteria;
+    private List<CriteriaRequest> criteria;
+
+    public List<CriteriaRequest> getCriteria() {
+        return criteria == null ? new ArrayList<>() : new ArrayList<>(criteria);
+    }
 }

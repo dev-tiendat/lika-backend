@@ -39,10 +39,10 @@ public class QuestionSpecification extends SearchCriteria<Question> {
 
         if (StringUtils.isNotEmpty(search)) {
             Predicate likeQuestionContent = buildPredicate(SearchOperation.MATCH, root.get("content"), search);
-            Predicate equalQuestionId = buildPredicate(SearchOperation.EQUAL, root.get("id"), search);
+            Predicate likeQuestionId =  buildPredicate(SearchOperation.MATCH, root.get("id"), search);
             Predicate likeChapterName = buildPredicate(SearchOperation.MATCH, questionChapterJoin.get("chapterName"), search);
 
-            predicates.add(builder.or(likeChapterName,equalQuestionId, likeQuestionContent));
+            predicates.add(builder.or(likeChapterName,likeQuestionId, likeQuestionContent));
         }
 
         return builder.and(predicates.toArray(new Predicate[0]));

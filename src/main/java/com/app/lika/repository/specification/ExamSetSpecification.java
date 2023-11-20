@@ -31,12 +31,12 @@ public class ExamSetSpecification extends SearchCriteria<ExamSet> {
         if(StringUtils.isNotEmpty(search)){
             Join<ExamSet, User> examSetUserJoin = root.join("createdBy");
             Predicate likeName = buildPredicate(SearchOperation.MATCH, root.get("name"), search);
-            Predicate equalId = buildPredicate(SearchOperation.EQUAL, root.get("id"), search);
+            Predicate likeId = buildPredicate(SearchOperation.MATCH, root.get("id"), search);
             Predicate likeSubjectName =buildPredicate(SearchOperation.MATCH, examSetSubjectJoin.get("subjectName"),search);
             Predicate likeFirstNameCreatedBy = buildPredicate(SearchOperation.MATCH, examSetUserJoin.get("firstName"), search);
             Predicate likeLastNameCreatedBy = buildPredicate(SearchOperation.MATCH, examSetUserJoin.get("lastName"), search);
 
-            predicates.add(builder.or(likeName,equalId,likeFirstNameCreatedBy,likeLastNameCreatedBy,likeSubjectName));
+            predicates.add(builder.or(likeName,likeId,likeFirstNameCreatedBy,likeLastNameCreatedBy,likeSubjectName));
         }
 
         return builder.and(predicates.toArray(new Predicate[0]));
