@@ -140,7 +140,7 @@ public class ExamScheduleServiceImpl implements ExamScheduleService {
         }
 
         Date publishedAt = new Date(examScheduleRequest.getPublishedAt());
-        if (publishedAt.before(new Date()))
+        if (publishedAt.after(new Date()))
             throw new BadRequestException("You cannot schedule your exam before this time");
         Date closedAt = new Date(publishedAt.getTime() + TimeUtils.convertMinutesToMilliseconds(examScheduleRequest.getTimeAllowance()));
         examSchedule.setTitle(examScheduleRequest.getTitle());
@@ -174,7 +174,7 @@ public class ExamScheduleServiceImpl implements ExamScheduleService {
                         User student = userRepository.getUserByUsername(username);
 
                         if (student.getStatus() == com.app.lika.model.user.Status.INACTIVE
-                                || !student.getRoles().contains(RoleName.ROLE_STUDENT)
+                                || !student.getRoles().contains(roleRepository.findByName(RoleName.ROLE_STUDENT).get())
                         ) {
                             throw new BadRequestException("You cannot add teachers or admins to the exam list");
                         }
