@@ -1,7 +1,9 @@
 package com.app.lika.payload.request;
 
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -21,6 +23,7 @@ public class ExamScheduleRequest {
     private Long publishedAt;
 
     @NotNull
+    @Min(value = 1)
     private Integer timeAllowance;
 
     private Long examSetId;

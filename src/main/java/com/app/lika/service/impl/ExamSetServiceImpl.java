@@ -197,10 +197,10 @@ public class ExamSetServiceImpl implements ExamSetService {
             try {
                 examSetRepository.delete(examSet);
 
-                return examSetMapper.entityToExamSetDto(examSet);
             } catch (Exception ex) {
                 throw new IntegrityConstraintViolationException(AppConstants.EXAM_SET);
             }
+            return examSetMapper.entityToExamSetDto(examSet);
         }
 
         throw new UnauthorizedException("You don't have permission delete to Exam set of :" + id);

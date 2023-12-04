@@ -63,6 +63,7 @@ public class ExamResult {
     public ExamResult(Float grade, Exam exam, ExamSchedule examSchedule, User student) {
         this.grade = grade;
         this.status = Status.INCOMPLETE;
+        this.numberOfRightAnswer = 0;
         this.numberOfQuestions = 0;
         this.exam = exam;
         this.examSchedule = examSchedule;

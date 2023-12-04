@@ -65,8 +65,11 @@ public class ExamScheduleController {
         List<StudentExamSchedule> data = examScheduleService.getAllExamScheduleForMe(currentUser);
         APIResponse<List<StudentExamSchedule>> response = new APIResponse<>("Get all your exam schedule successful !", data);
 
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
+    @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<APIResponse<ExamScheduleDTO>> addExamSchedule(@RequestBody @Valid ExamScheduleRequest examScheduleRequest) {
         ExamScheduleDTO data = examScheduleService.addExamSchedule(examScheduleRequest);
         APIResponse<ExamScheduleDTO> response = new APIResponse<>("Add new Exam schedule successful !", data);

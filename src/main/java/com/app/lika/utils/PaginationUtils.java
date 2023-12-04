@@ -16,8 +16,8 @@ public class PaginationUtils {
             throw new APIException(HttpStatus.BAD_REQUEST, "Page number cannot be less than zero");
         }
 
-        if (size < 0) {
-            throw new APIException(HttpStatus.BAD_REQUEST, "Size number cannot be les than zero.");
+        if (size < 1) {
+            throw new APIException(HttpStatus.BAD_REQUEST, "Size number cannot be les than 1.");
         }
 
         if (size > AppConstants.MAX_PAGE_SIZE) {

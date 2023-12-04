@@ -118,9 +118,10 @@ public class ExamScheduleServiceImpl implements ExamScheduleService {
         int countExam = 0;
         for (String username : examScheduleRequest.getStudentsUsernames()) {
             User student = userRepository.getUserByUsername(username);
-            if (student.getStatus() == com.app.lika.model.user.Status.INACTIVE
-                    || !student.getRoles().equals(RoleName.ROLE_STUDENT)
-            )
+            if (student.getStatus() == com.app.lika.model.user.Status.INACTIVE)
+                throw new BadRequestException("You cannot add users whose accounts have not been activated !");
+
+            if(!student.getRoles().contains(roleRepository.findByName(RoleName.ROLE_STUDENT).get()))
                 throw new BadRequestException("You cannot add teachers or admins to the exam list");
             students.add(student);
 
@@ -173,11 +174,11 @@ public class ExamScheduleServiceImpl implements ExamScheduleService {
                     .stream().map(username -> {
                         User student = userRepository.getUserByUsername(username);
 
-                        if (student.getStatus() == com.app.lika.model.user.Status.INACTIVE
-                                || !student.getRoles().contains(roleRepository.findByName(RoleName.ROLE_STUDENT).get())
-                        ) {
+                        if (student.getStatus() == com.app.lika.model.user.Status.INACTIVE)
+                            throw new BadRequestException("You cannot add users whose accounts have not been activated !");
+
+                        if(!student.getRoles().contains(roleRepository.findByName(RoleName.ROLE_STUDENT).get()))
                             throw new BadRequestException("You cannot add teachers or admins to the exam list");
-                        }
 
                         return student;
                     })
