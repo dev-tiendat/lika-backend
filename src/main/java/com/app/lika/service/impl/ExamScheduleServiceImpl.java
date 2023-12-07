@@ -141,7 +141,7 @@ public class ExamScheduleServiceImpl implements ExamScheduleService {
         }
 
         Date publishedAt = new Date(examScheduleRequest.getPublishedAt());
-        if (publishedAt.after(new Date()))
+        if (publishedAt.before(new Date()))
             throw new BadRequestException("You cannot schedule your exam before this time");
         Date closedAt = new Date(publishedAt.getTime() + TimeUtils.convertMinutesToMilliseconds(examScheduleRequest.getTimeAllowance()));
         examSchedule.setTitle(examScheduleRequest.getTitle());
@@ -184,7 +184,7 @@ public class ExamScheduleServiceImpl implements ExamScheduleService {
                     })
                     .toList();
             Date publishedAt = new Date(examScheduleRequest.getPublishedAt());
-            if (publishedAt.after(new Date()))
+            if (publishedAt.before(new Date()))
                 throw new BadRequestException("You cannot schedule your exam before this time");
             Date closedAt = new Date(publishedAt.getTime() + TimeUtils.convertMinutesToMilliseconds(examScheduleRequest.getTimeAllowance()));
 

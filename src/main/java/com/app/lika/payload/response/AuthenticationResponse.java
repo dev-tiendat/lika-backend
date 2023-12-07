@@ -9,18 +9,10 @@ import lombok.Data;
 import java.util.List;
 
 @Data
+@AllArgsConstructor
 public class AuthenticationResponse {
-    private Long id;
     private String username;
-    private String email;
+    private String fullName;
     private List<String> roles;
     private String token;
-
-    public AuthenticationResponse(Long id, String username, String email, List<String> roles,String accessToken) {
-        this.token = accessToken;
-        this.id = id;
-        this.username = username;
-        this.email = email;
-        this.roles = roles;
-    }
 }
