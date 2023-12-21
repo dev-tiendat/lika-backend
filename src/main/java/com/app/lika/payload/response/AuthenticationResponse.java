@@ -11,6 +11,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 public class AuthenticationResponse {
+    private Long id;
     private String username;
     private String fullName;
     private List<String> roles;

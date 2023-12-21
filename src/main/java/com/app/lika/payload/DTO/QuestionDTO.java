@@ -22,5 +22,7 @@ public class QuestionDTO {
 
     private UserSummary teacher;
 
+    private String subjectName;
+
     private List<AnswerDTO> answers;
 }

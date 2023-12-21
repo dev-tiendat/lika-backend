@@ -106,7 +106,7 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PatchMapping("{username}/giveAdmin")
+    @PatchMapping("/{username}/giveAdmin")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<APIResponse<UserProfile>> giveAdmin(@PathVariable(name = "username") String username) {
         UserProfile data = userService.giveAdmin(username);
@@ -115,7 +115,7 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PatchMapping("{username}/activate")
+    @PatchMapping("/{username}/activate")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<APIResponse<UserProfile>> activateAccount(@PathVariable(name = "username") String username) {
         UserProfile data = userService.activateOrDeactivateUser(username, Status.ACTIVE);
@@ -124,7 +124,7 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PatchMapping("{username}/deactivate")
+    @PatchMapping("/{username}/deactivate")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<APIResponse<UserProfile>> deactivateAccount(@PathVariable(name = "username") String username) {
         UserProfile data = userService.activateOrDeactivateUser(username, Status.INACTIVE);

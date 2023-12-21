@@ -68,9 +68,9 @@ public class AuthServiceImpl implements AuthService {
         List<String> roles = userPrincipal.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority).toList();
         String jwt = tokenProvider.generateToken(authentication);
-        String fullName = userPrincipal.getFirstName() + userPrincipal.getLastName();
+        String fullName = userPrincipal.getFirstName() + " " + userPrincipal.getLastName();
 
-        return new AuthenticationResponse(userPrincipal.getUsername(),fullName, roles, jwt);
+        return new AuthenticationResponse(userPrincipal.getId(), userPrincipal.getUsername(),fullName, roles, jwt);
     }
 
     @Override

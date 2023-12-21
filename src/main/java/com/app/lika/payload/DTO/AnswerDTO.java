@@ -16,7 +16,7 @@ public class AnswerDTO {
     private String content;
 
     @NotNull
-    private Correct is_correct;
+    private Correct isCorrect;
 
     @NotNull
     @NotBlank

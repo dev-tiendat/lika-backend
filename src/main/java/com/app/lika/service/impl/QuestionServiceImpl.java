@@ -159,7 +159,7 @@ public class QuestionServiceImpl implements QuestionService {
                                 .orElseThrow(() -> new ResourceNotFoundException(AppConstants.ANSWER, AppConstants.ID, answerRequest.getId()));
 
                         answer.setContent(answerRequest.getContent());
-                        answer.setIs_correct(answerRequest.getIs_correct());
+                        answer.setIsCorrect(answerRequest.getIsCorrect());
                     }
                     answer.setOptionLetter(TextUtils.LIST_CHAR[i]);
                     updatedAnswers.add(answer);
@@ -214,11 +214,10 @@ public class QuestionServiceImpl implements QuestionService {
     private boolean checkQuestionRequestValid(QuestionRequest questionRequest) {
         List<AnswerRequest> answers = questionRequest.getAnswers();
         int countAnswerCorrect = (int) answers.stream()
-                .filter(answer -> answer.getIs_correct() == Correct.TRUE)
+                .filter(answer -> answer.getIsCorrect() == Correct.TRUE)
                 .count();
 
         boolean isMultipleChoice = questionRequest.getType() == QuestionType.MULTIPLE;
-
         if (isMultipleChoice) {
             return countAnswerCorrect > 1 && countAnswerCorrect < answers.size();
         } else {

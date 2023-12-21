@@ -15,5 +15,5 @@ public class AnswerRequest {
 
     @NotNull
     @NotBlank
-    private Correct is_correct;
+    private Correct isCorrect;
 }

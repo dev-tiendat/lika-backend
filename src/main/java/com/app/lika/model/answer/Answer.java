@@ -30,7 +30,7 @@ public class Answer {
     @NotNull
     @Enumerated(EnumType.ORDINAL)
     @Column(name = "is_correct")
-    private Correct is_correct;
+    private Correct isCorrect;
 
     @NotNull
     @NotBlank

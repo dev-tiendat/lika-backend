@@ -151,7 +151,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserProfile deleteUser(String username) {
         User user = userRepository.getUserByUsername(username);
-        if (user.getRoles().contains(roleRepository.findByName(RoleName.ROLE_ADMIN).get())) {
+        if (!user.getRoles().contains(roleRepository.findByName(RoleName.ROLE_ADMIN).get())) {
             try {
                 userRepository.delete(user);
 

@@ -15,6 +15,7 @@ public interface QuestionMapper {
     Question questionRequestToEntity(QuestionRequest questionRequest);
 
     @Mapping(source = "teacher", target = "teacher")
+    @Mapping(target = "subjectName", source= "chapter.subject.subjectName" )
     QuestionDTO entityToQuestionDto(Question question);
 
     QuestionResponse entityToQuestionResponse(QuestionResponse questionResponse);

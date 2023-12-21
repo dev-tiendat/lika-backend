@@ -154,7 +154,7 @@ public class TestServiceImpl implements TestService {
 
     private int countSingleCorrectAnswers(List<Answer> answers, List<Long> studentAnswers) {
         for (Answer answer : answers) {
-            if (answer.getIs_correct() == Correct.TRUE && studentAnswers.contains(answer.getId())) {
+            if (answer.getIsCorrect() == Correct.TRUE && studentAnswers.contains(answer.getId())) {
                 return 1;
             }
         }
@@ -163,8 +163,8 @@ public class TestServiceImpl implements TestService {
 
     private boolean areAllMultipleAnswersCorrect(List<Answer> answers, List<Long> studentAnswers) {
         for (Answer answer : answers) {
-            if ((answer.getIs_correct() == Correct.FALSE && studentAnswers.contains(answer.getId()))
-                    || (answer.getIs_correct() == Correct.TRUE && !studentAnswers.contains(answer.getId()))) {
+            if ((answer.getIsCorrect() == Correct.FALSE && studentAnswers.contains(answer.getId()))
+                    || (answer.getIsCorrect() == Correct.TRUE && !studentAnswers.contains(answer.getId()))) {
                 return false;
             }
         }

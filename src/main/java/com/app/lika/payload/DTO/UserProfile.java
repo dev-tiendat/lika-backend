@@ -27,9 +27,9 @@ public class UserProfile {
 
     private Gender gender;
 
-    private Date dateOfBirth;
+    private Long dateOfBirth;
 
     private Status status;
 
-    private List<Role> roles;
+    private List<String> roles;
 }

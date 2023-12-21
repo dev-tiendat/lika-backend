@@ -34,7 +34,7 @@ public class TeacherController {
         PaginationUtils.validatePageNumberAndSize(page, size);
 
         FilterBy filters = new FilterBy();
-        filters.addFilter("role", Integer.toString(RoleName.ROLE_TEACHER.ordinal()));
+        filters.addFilter("role", Integer.toString(RoleName.ROLE_TEACHER.ordinal() + 1));
 
         SortBy sortBy = new SortBy(AppConstants.DEFAULT_SORT_BY, SortOrder.ASC);
         PaginationCriteria paginationCriteria = new PaginationCriteria(page, size, query, sortBy, filters);
