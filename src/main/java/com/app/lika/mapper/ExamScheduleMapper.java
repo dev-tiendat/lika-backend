@@ -8,8 +8,13 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 
+import java.util.Date;
+
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING, uses = {UserMapper.class, ExamSetMapper.class})
 public interface ExamScheduleMapper {
+    @Mapping(target = "publishedAt", expression = "java(toTimestamp(examSchedule.getPublishedAt()))")
+    @Mapping(target = "closedAt", expression = "java(toTimestamp(examSchedule.getClosedAt()))")
+    @Mapping(target = "examSet.subject.id",source = "examSet.subject.subjectId")
     ExamScheduleDTO entityToExamScheduleDto(ExamSchedule examSchedule);
 
     @Mapping(target = "subjectName", source = "examSet.subject.subjectName")
@@ -19,4 +24,9 @@ public interface ExamScheduleMapper {
     @Mapping(target = "subjectId",source = "examSet.subject.subjectId")
     @Mapping(target = "examScheduleName", source = "title")
     StudentExamSchedule entityToStudentExamSchedule(ExamSchedule examSchedule);
+
+    default Long toTimestamp(Date date) {
+        return date == null ? null : date.getTime();
+    }
+
 }

@@ -1,7 +1,9 @@
 package com.app.lika.payload.DTO;
 
+import com.app.lika.model.Status;
 import com.app.lika.model.question.Level;
 import com.app.lika.model.question.QuestionType;
+import com.app.lika.payload.response.SubjectNameResponse;
 import lombok.Data;
 
 import java.util.List;
@@ -14,6 +16,8 @@ public class QuestionDTO {
 
     private String image;
 
+    private Status status;
+
     private Level level;
 
     private QuestionType type;
@@ -22,7 +26,7 @@ public class QuestionDTO {
 
     private UserSummary teacher;
 
-    private String subjectName;
+    private SubjectNameResponse subject;
 
     private List<AnswerDTO> answers;
 }

@@ -126,7 +126,7 @@ public class UserServiceImpl implements UserService {
         String username = userRequest.getUsername().trim();
         String password = passwordEncoder.encode(userRequest.getPassword().trim());
         String email = userRequest.getEmail().trim();
-        String phoneNumber = userRequest.getPhoneNumber().trim();
+        String phoneNumber = "";
         String firstName = userRequest.getFirstName().trim();
         String lastName = userRequest.getLastName().trim();
         String address = userRequest.getAddress().trim();

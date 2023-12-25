@@ -9,13 +9,14 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 
-@Mapper(componentModel = MappingConstants.ComponentModel.SPRING, uses = {AnswerMapper.class, UserMapper.class})
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING, uses = {AnswerMapper.class, UserMapper.class, SubjectMapper.class})
 public interface QuestionMapper {
     @Mapping(target = "image", ignore = true)
     Question questionRequestToEntity(QuestionRequest questionRequest);
 
     @Mapping(source = "teacher", target = "teacher")
-    @Mapping(target = "subjectName", source= "chapter.subject.subjectName" )
+    @Mapping(target = "subject", source= "chapter.subject" )
+    @Mapping(target = "status", source = "status")
     QuestionDTO entityToQuestionDto(Question question);
 
     QuestionResponse entityToQuestionResponse(QuestionResponse questionResponse);

@@ -55,7 +55,7 @@ public class QuestionController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
+    @PreAuthorize("hasRole('TEACHER')")
     public ResponseEntity<APIResponse<QuestionDTO>> addQuestion(
             @RequestBody @Valid QuestionRequest questionRequest,
             @CurrentUser UserPrincipal currentUser

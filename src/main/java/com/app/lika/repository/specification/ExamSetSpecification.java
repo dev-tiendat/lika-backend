@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class ExamSetSpecification extends SearchCriteria<ExamSet> {
+public class  ExamSetSpecification extends SearchCriteria<ExamSet> {
 
     public ExamSetSpecification(Map<String, String> filters, String search) {
         super(filters, search);

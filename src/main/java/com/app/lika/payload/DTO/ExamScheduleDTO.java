@@ -16,9 +16,9 @@ public class ExamScheduleDTO {
 
     private String summary;
 
-    private Date publishedAt;
+    private Long publishedAt;
 
-    private Date closedAt;
+    private Long closedAt;
 
     private Integer timeAllowance;
 
