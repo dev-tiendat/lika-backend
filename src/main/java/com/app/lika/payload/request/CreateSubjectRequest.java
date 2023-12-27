@@ -24,7 +24,6 @@ public class CreateSubjectRequest {
     @NotNull
     private Short creditHours;
 
-    @NotNull
     private List<String> chapterNames;
 
     public void setSubjectName(String subjectName) {
@@ -41,6 +40,6 @@ public class CreateSubjectRequest {
     }
 
     public List<String> getChapterNames() {
-        return new ArrayList<>(chapterNames);
+        return chapterNames == null ? new ArrayList<>() : new ArrayList<>(chapterNames);
     }
 }

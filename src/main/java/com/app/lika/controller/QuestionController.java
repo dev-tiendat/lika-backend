@@ -33,7 +33,7 @@ public class QuestionController {
             @RequestParam(name = "size", required = false, defaultValue = AppConstants.DEFAULT_PAGE_SIZE) Integer size,
             @RequestParam(name = "query", required = false, defaultValue = "") String query,
             @RequestParam(name = "order", required = false, defaultValue = AppConstants.DEFAULT_SORT_METHOD) String sort,
-            @RequestParam(name = "sortBy", required = false, defaultValue = AppConstants.DEFAULT_SORT_BY) String sortField,
+            @RequestParam(name = "sortBy", required  = false, defaultValue = AppConstants.DEFAULT_SORT_BY) String sortField,
             @RequestParam(name = "subjectId", required = false) String subjectId,
             @RequestParam(name = "teacherId", required = false) Long teacherId
     ) {
