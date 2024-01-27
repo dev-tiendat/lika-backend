@@ -20,12 +20,19 @@ public class  ExamSetSpecification extends SearchCriteria<ExamSet> {
     public Predicate toPredicate(Root<ExamSet> root, CriteriaQuery<?> query, CriteriaBuilder builder, Map<String, String> filters, String search) {
         List<Predicate> predicates = new ArrayList<>();
         String subjectId = filters.get("subjectId");
+        String status = filters.get("status");
 
         Join<ExamSet, Subject> examSetSubjectJoin = root.join("subject");
         if(StringUtils.isNotEmpty(subjectId)){
             Predicate equalSubjectId = buildPredicate(SearchOperation.EQUAL,root.get("subjectId"),subjectId);
 
             predicates.add(equalSubjectId);
+        }
+
+        if(StringUtils.isNotEmpty(status)){
+            Predicate equalStatus = buildPredicate(SearchOperation.EQUAL,root.get("status"),status);
+
+            predicates.add(equalStatus);
         }
 
         if(StringUtils.isNotEmpty(search)){

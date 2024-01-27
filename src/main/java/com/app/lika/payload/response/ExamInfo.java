@@ -16,7 +16,9 @@ public class ExamInfo {
 
     private String summary;
 
-    private Date publishedAt;
+    private Long publishedAt;
+
+    private Long closedAt;
 
     private Integer timeAllowance;
 }

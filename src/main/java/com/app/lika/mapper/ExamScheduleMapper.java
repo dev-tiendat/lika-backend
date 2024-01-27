@@ -18,11 +18,15 @@ public interface ExamScheduleMapper {
     ExamScheduleDTO entityToExamScheduleDto(ExamSchedule examSchedule);
 
     @Mapping(target = "subjectName", source = "examSet.subject.subjectName")
+    @Mapping(target = "publishedAt", expression = "java(toTimestamp(examSchedule.getPublishedAt()))")
+    @Mapping(target = "closedAt", expression = "java(toTimestamp(examSchedule.getClosedAt()))")
     ExamInfo entityToExamInfo(ExamSchedule examSchedule);
 
     @Mapping(target = "subjectName", source = "examSet.subject.subjectName")
     @Mapping(target = "subjectId",source = "examSet.subject.subjectId")
     @Mapping(target = "examScheduleName", source = "title")
+    @Mapping(target = "publishedAt", expression = "java(toTimestamp(examSchedule.getPublishedAt()))")
+    @Mapping(target = "closedAt", expression = "java(toTimestamp(examSchedule.getClosedAt()))")
     StudentExamSchedule entityToStudentExamSchedule(ExamSchedule examSchedule);
 
     default Long toTimestamp(Date date) {

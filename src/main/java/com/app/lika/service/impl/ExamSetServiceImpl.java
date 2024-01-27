@@ -30,6 +30,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 
@@ -123,7 +124,7 @@ public class ExamSetServiceImpl implements ExamSetService {
 
             int minimumQuestions = (int) (quantity * Math.ceil((quantityOfExams + 1) / 2.0));
             if (questionOptionsList.size() < minimumQuestions)
-                throw new AppException("Questions bank is not enough to create exam questions !");
+                throw new APIException(HttpStatus.BAD_REQUEST, "Questions bank is not enough to create exam questions !",ExceptionCustomCode.QUESTION_BANK_IS_NOT_ENOUGH.getCode());
 
             Collections.shuffle(questionOptionsList);
             List<Question> selectedQuestions = questionOptionsList.subList(0, minimumQuestions);
@@ -142,6 +143,10 @@ public class ExamSetServiceImpl implements ExamSetService {
     public ExamSetDTO updateExamSet(Long id, CreateExamSetRequest request, UserPrincipal currentUser) {
         ExamSet examSet = examSetRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(AppConstants.EXAM_SET, AppConstants.ID, id));
+
+        if(examSet.getStatus() == Status.USED)
+            throw new BadRequestException("You cannot update a test set that has already been used!");
+        
         if (examSet.getCreatedBy().getId().equals(currentUser.getId())
                 || currentUser.getAuthorities().contains(new SimpleGrantedAuthority(RoleName.ROLE_ADMIN.toString()))) {
             Subject subject = subjectRepository.findById(request.getSubjectId())
@@ -167,7 +172,7 @@ public class ExamSetServiceImpl implements ExamSetService {
 
                 int minimumQuestions = (int) (quantity * Math.ceil((quantityOfExams + 1) / 2.0));
                 if (questionOptionsList.size() < minimumQuestions)
-                    throw new AppException("Questions bank is not enough to create exam questions !");
+                    throw new APIException(HttpStatus.BAD_REQUEST, "Questions bank is not enough to create exam questions !",ExceptionCustomCode.QUESTION_BANK_IS_NOT_ENOUGH.getCode());
 
                 Collections.shuffle(questionOptionsList);
                 List<Question> selectedQuestions = questionOptionsList.subList(0, minimumQuestions);

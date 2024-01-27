@@ -63,7 +63,13 @@ public class ExamScheduleServiceImpl implements ExamScheduleService {
     @Override
     public List<StudentExamSchedule> getAllExamScheduleForMe(UserPrincipal currentUser) {
         User student = userRepository.getUser(currentUser);
-        List<ExamSchedule> examSchedules = student.getExamSchedules();
+        List<ExamSchedule> examSchedules = new ArrayList<>();
+
+        student.getExamSchedules().forEach((examSchedule -> {
+            if(examSchedule.getStatus() == Status.ENABLE){
+                examSchedules.add((examSchedule));
+            }
+        }));
 
         return examSchedules.stream().map(examScheduleMapper::entityToStudentExamSchedule).toList();
     }
@@ -140,9 +146,13 @@ public class ExamScheduleServiceImpl implements ExamScheduleService {
             }
         }
 
-        Date publishedAt = new Date(examScheduleRequest.getPublishedAt());
+        Date publishedAt = new Date(examScheduleRequest.getPublishedAt() * 1000);
         if (publishedAt.before(new Date()))
             throw new BadRequestException("You cannot schedule your exam before this time");
+
+        if(examSet != null)
+            examSet.setStatus(com.app.lika.model.examSet.Status.USED);
+
         Date closedAt = new Date(publishedAt.getTime() + TimeUtils.convertMinutesToMilliseconds(examScheduleRequest.getTimeAllowance()));
         examSchedule.setTitle(examScheduleRequest.getTitle());
         examSchedule.setSummary(examScheduleRequest.getSummary());
@@ -166,7 +176,7 @@ public class ExamScheduleServiceImpl implements ExamScheduleService {
         if (!teacher.getRoles().contains(roleRepository.findByName(RoleName.ROLE_TEACHER).get()))
             throw new BadRequestException(examScheduleRequest.getTeacherUsername() + " is not a teacher !");
 
-        if (examSchedule.getPublishedAt().before(new Date())) {
+        if (examSchedule.getPublishedAt().after(new Date())) {
             ExamSet examSet = examScheduleRequest.getExamSetId() == null ? null
                     : examSetRepository.findById(examScheduleRequest.getExamSetId())
                     .orElseThrow(() -> new ResourceNotFoundException(AppConstants.EXAM_SET, AppConstants.ID, examScheduleRequest.getExamSetId()));
@@ -183,9 +193,12 @@ public class ExamScheduleServiceImpl implements ExamScheduleService {
                         return student;
                     })
                     .toList();
-            Date publishedAt = new Date(examScheduleRequest.getPublishedAt());
+            Date publishedAt = new Date(examScheduleRequest.getPublishedAt() * 1000);
             if (publishedAt.before(new Date()))
                 throw new BadRequestException("You cannot schedule your exam before this time");
+
+            if(examSet != null)
+                examSet.setStatus(com.app.lika.model.examSet.Status.USED);
             Date closedAt = new Date(publishedAt.getTime() + TimeUtils.convertMinutesToMilliseconds(examScheduleRequest.getTimeAllowance()));
 
             examSchedule.getStudents().clear();

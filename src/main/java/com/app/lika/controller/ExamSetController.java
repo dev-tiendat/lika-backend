@@ -36,17 +36,19 @@ public class ExamSetController {
             @RequestParam(name = "query", required = false, defaultValue = "") String query,
             @RequestParam(name = "order", required = false, defaultValue = AppConstants.DEFAULT_SORT_METHOD) String sort,
             @RequestParam(name = "sortBy", required = false, defaultValue = AppConstants.DEFAULT_SORT_BY) String sortField,
+            @RequestParam(name = "status", required = false) Integer status,
             @RequestParam(name = "subjectId", required = false) String subjectId
-    ){
+    ) {
         PaginationUtils.validatePageNumberAndSize(page, size);
         PaginationUtils.sortColumnCheck(SORT_COLUMNS, sortField);
 
         FilterBy filters = new FilterBy();
         filters.addFilter("subjectId", subjectId);
+        filters.addFilter("status", status != null ? status.toString() : "");
 
         SortOrder sortOrder = SortOrder.fromValue(sort);
         SortBy sortBy = new SortBy(sortField, sortOrder);
-        PaginationCriteria paginationCriteria = new PaginationCriteria(page, size, query, sortBy, filters);
+        PaginationCriteria paginationCriteria = new PaginationCriteria(page, status != null ? 999 : size, query, sortBy, filters);
 
         PagedResponse<ExamSetDTO> data = examSetService.getAllExamSets(paginationCriteria);
         APIResponse<PagedResponse<ExamSetDTO>> response = new APIResponse<>("Get all exam sets successful !", data);

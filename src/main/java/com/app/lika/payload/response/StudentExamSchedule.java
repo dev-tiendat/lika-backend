@@ -16,7 +16,9 @@ public class StudentExamSchedule {
 
     private String subjectName;
 
-    private Date publishedAt;
+    private Long publishedAt;
+
+    private Long closedAt;
 
     private Integer timeAllowance;
 }

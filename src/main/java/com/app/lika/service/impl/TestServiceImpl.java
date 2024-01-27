@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class TestServiceImpl implements TestService {
@@ -47,6 +48,13 @@ public class TestServiceImpl implements TestService {
         this.questionMapper = questionMapper;
         this.examResultMapper = examResultMapper;
         this.answerRepository = answerRepository;
+    }
+
+    @Override
+    public List<ExamGrade> getAllOldExam(UserPrincipal currentUser) {
+        List<ExamResult> examResults = examResultRepository.findByStudent_IdAndStatus(currentUser.getId(), Status.COMPLETED);
+
+        return examResults.stream().map(examResultMapper::entityToExamGrade).collect(Collectors.toList());
     }
 
     @Override

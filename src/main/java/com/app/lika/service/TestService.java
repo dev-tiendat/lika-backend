@@ -1,5 +1,6 @@
 package com.app.lika.service;
 
+import com.app.lika.payload.response.ExamGrade;
 import com.app.lika.payload.response.ExamResultDetailResponse;
 import com.app.lika.payload.response.ExamResultGrade;
 import com.app.lika.payload.response.TakeExamResponse;
@@ -10,6 +11,8 @@ import java.util.List;
 
 @Service
 public interface TestService {
+
+    List<ExamGrade> getAllOldExam(UserPrincipal currentUser);
     TakeExamResponse takeExam(Long scheduleId, UserPrincipal currentUser);
 
     ExamResultGrade submitExam(Long scheduleId, UserPrincipal currentUser, List<Long> answers);
